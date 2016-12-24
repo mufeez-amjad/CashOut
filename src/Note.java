@@ -48,7 +48,7 @@ public class Note {
 	}
 	
 	public void collect(Player p){
-		if (p.getX() + p.getWidth()/2 - 5 > x && p.getY() + p.getHeight()/2 + 5 > y && p.getX() < x + width && p.getY() < y + height ){
+		if (p.getX() + p.getWidth()/2 > x && p.getY() + p.getHeight()/2 > y && p.getX() < x + width && p.getY() < y + height ){
 			collected  = true;
 		}
 	}
