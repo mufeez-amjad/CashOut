@@ -12,15 +12,17 @@ import javax.swing.*;
 public class CashOut extends JPanel{
 	private Note note = new Note();
 	private Note[] notes = new Note[4];
-	private static Player player = new Player();
-	private int frameHeight = 900;
-	private int frameWidth = 1200;
+	private Player player = new Player();
+	private Inventory inventory = new Inventory();
 	
-	public int getFrameHeight(){
+	private static int frameHeight = 900;
+	private static int frameWidth = 1200;
+	
+	public static int getFrameHeight(){
 		return frameHeight;
 	}
 	
-	public int getFrameWidth(){
+	public static int getFrameWidth(){
 		return frameWidth;
 	}
 
@@ -31,33 +33,8 @@ public class CashOut extends JPanel{
 		for (int i = 0; i < notes.length; i++){
 			notes[i] = new Note();
 		}
-	}
-	
-	public void paint(Graphics g){
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				 RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.setColor(Color.white);
-		g2d.fillRect(0, 0, frameWidth, frameHeight);
-		for (int i = 0; i < notes.length; i++){
-			notes[i].paint(g2d);
-		}
-		player.paint(g2d);
-	}
-	
-	public void update(){
-		player.update();
 		
-		for (int i = 0; i < notes.length; i++){
-			notes[i].collect(player);
-		}
-		
-	}
-	
-	public static void main(String[] args) throws InterruptedException {
-		JFrame frame = new  JFrame();
-		CashOut panel = new CashOut();
-		panel.addKeyListener(new KeyListener() {
+		addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent e) {}
@@ -86,6 +63,33 @@ public class CashOut extends JPanel{
 				} 
 			}
 		});
+	}
+	
+	public void paint(Graphics g){
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				 RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setColor(Color.white);
+		g2d.fillRect(0, 0, frameWidth, frameHeight);
+		for (int i = 0; i < notes.length; i++){
+			notes[i].paint(g2d);
+		}
+		player.paint(g2d);
+		inventory.paint(g2d);		
+	}
+	
+	public void update(){
+		player.update();
+		
+		for (int i = 0; i < notes.length; i++){
+			notes[i].collect(player);
+		}
+		
+	}
+	
+	public static void main(String[] args) throws InterruptedException {
+		JFrame frame = new  JFrame();
+		CashOut panel = new CashOut();
 		frame.add(panel); 
 		panel.setFocusable(true);
 		panel.requestFocusInWindow();

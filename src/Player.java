@@ -25,7 +25,7 @@ public class Player {
 
 	public Player(){
 		try { 
-			spriteSheet = ImageIO.read(getClass().getResource("/Sprites3.png"));
+			spriteSheet = ImageIO.read(getClass().getResource("/Sprites.png"));
 		} catch (IOException e) { 
 			System.err.println("Sprites3.png could not be found");
 		}
