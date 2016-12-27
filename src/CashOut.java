@@ -26,6 +26,8 @@ public class CashOut extends JPanel{
 	private Timer timer;
 	
 	private BufferedImage suspicion;
+	private MazePuzzle mazePuzzle = new MazePuzzle(30);
+	
 	private static int score = 0;
 	private static Font font;
 	private static Font fontBig;
@@ -130,12 +132,12 @@ public class CashOut extends JPanel{
 		
 		addMouseMotionListener(new MouseAdapter() {
 			public void mouseMoved(MouseEvent e) {
-				//System.out.println(e.getX());
+				mazePuzzle.mouseMoved(e);
 			}
 			public void mouseDragged(MouseEvent e){ }
 		});
 		
-		timer = new Timer(1150, 40, 25, 50);
+		timer = new Timer(1150, 40, 25, 50, "GREEN");
 
 	}
 	
@@ -158,6 +160,8 @@ public class CashOut extends JPanel{
 		player.paint(g2d);
 		inventory.paint(g2d);
 
+		mazePuzzle.paint(g2d);
+		
 		g2d.setColor(front);
 		g2d.fillRect(75, frameHeight - 160, 10 * (MoneyBag.getTotalValue()/10/2), 50); //score
 		g2d.fillRect(75, frameHeight - 215, 200, 50); //suspicion
@@ -184,6 +188,7 @@ public class CashOut extends JPanel{
 	
 	public void update(){
 		player.update();
+		mazePuzzle.update();
 		
 		for (int i = 0; i < notes.length; i++){
 			notes[i].collect(player);
