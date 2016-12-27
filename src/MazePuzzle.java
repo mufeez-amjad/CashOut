@@ -89,7 +89,7 @@ public class MazePuzzle {
 			g2d.fillRect(39, 496, 42, 370);
 			g2d.fillRect(39, 496, 628, 42);
 			g2d.fillRect(667, 448, 164, 151);
-			g2d.setFont(CashOut.getCustomFont());
+			g2d.setFont(CashOut.getFontMedium());
 			g2d.drawString("TIMER ' " + interval, 880, 60);
 		}
 	}
