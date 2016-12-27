@@ -23,11 +23,15 @@ public class CashOut extends JPanel{
 	private MoneyBag[] money = new MoneyBag[4];
 	private Player player = new Player();
 	private Inventory inventory = new Inventory();
+<<<<<<< HEAD
 	private Timer timer;
 	
 	private BufferedImage suspicion;
 	private MazePuzzle mazePuzzle = new MazePuzzle(30);
 	
+=======
+	private MazePuzzle mazePuzzle = new MazePuzzle(30);
+>>>>>>> origin/master
 	private static int score = 0;
 	private static Font font;
 	private static Font fontBig;
@@ -159,9 +163,13 @@ public class CashOut extends JPanel{
 		
 		player.paint(g2d);
 		inventory.paint(g2d);
+<<<<<<< HEAD
 
 		mazePuzzle.paint(g2d);
 		
+=======
+		mazePuzzle.paint(g2d);
+>>>>>>> origin/master
 		g2d.setColor(front);
 		g2d.fillRect(75, frameHeight - 160, 10 * (MoneyBag.getTotalValue()/10/2), 50); //score
 		g2d.fillRect(75, frameHeight - 215, 200, 50); //suspicion
