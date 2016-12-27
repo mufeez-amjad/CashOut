@@ -12,13 +12,20 @@ public class Timer {
 	private int speed;
 	private boolean timesUp = false;
 	private boolean running = true;
+	private Color color;
 
-	public Timer(int x, int y, int size, int speed){
+	public Timer(int x, int y, int size, int speed, String c){
 		this.x = x;
 		this.y = y;
 		this.size = size;
 		this.speed = speed;
 		progress *= this.speed;
+		
+		if (c.equals("RED")) color = Color.decode("0x990000");
+		else if (c.equals("GREEN")) color = Color.decode("0x065C27");
+		else if (c.equals("WHITE")) color = Color.white;
+		
+		
 	}
 
 	public void paint(Graphics2D g2d){
@@ -31,7 +38,7 @@ public class Timer {
 			arc.setFrameFromCenter(new Point(0,0), new Point(size, size));
 			arc.setAngleStart(360);
 			arc.setAngleExtent(progress/speed);
-			g2d.setColor(Color.decode("0x065C27"));
+			g2d.setColor(color);
 			g2d.fill(arc);
 		}
 	}
