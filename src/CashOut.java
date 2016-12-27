@@ -8,11 +8,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
+//import java.util.Timer;
+//import java.util.TimerTask;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class CashOut extends JPanel{
@@ -21,6 +23,9 @@ public class CashOut extends JPanel{
 	private MoneyBag[] money = new MoneyBag[4];
 	private Player player = new Player();
 	private Inventory inventory = new Inventory();
+	private Timer timer;
+	
+	private BufferedImage suspicion;
 	private static int score = 0;
 	private static Font font;
 	private static Font fontBig;
@@ -44,12 +49,18 @@ public class CashOut extends JPanel{
 		
 		try { 
 			font = Font.createFont(Font.TRUETYPE_FONT, new File("src/CashCurrency.ttf")); 
-			fontBig = font.deriveFont(Font.PLAIN, 90);
+			fontBig = font.deriveFont(Font.PLAIN, 50);
 			fontMedium = font.deriveFont(Font.PLAIN, 25);
 			fontSmall = font.deriveFont(Font.PLAIN, 12);
 			fontTiny = font.deriveFont(Font.PLAIN, 9);
 		} catch (IOException|FontFormatException e) { 
 			System.out.println("CashCurrency.ttf could not be found");
+		}
+		
+		try { 
+			suspicion = ImageIO.read(getClass().getResource("/Suspicion.png"));
+		} catch (IOException e) { 
+			System.err.println("Suspicion.png could not be found");
 		}
 		
 		for (int i = 0; i < notes.length; i++){
@@ -92,7 +103,7 @@ public class CashOut extends JPanel{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
-				if (e.getX() > 620 && e.getX() < 695 && e.getY() > 700 && e.getY() < 775){
+				if (e.getX() > 670 && e.getX() < 745 && e.getY() > 700 && e.getY() < 775){
 					inventory.expandNotes();
 
 				}
@@ -123,6 +134,9 @@ public class CashOut extends JPanel{
 			}
 			public void mouseDragged(MouseEvent e){ }
 		});
+		
+		timer = new Timer(1150, 40, 25, 50);
+
 	}
 	
 	public void paint(Graphics g){
@@ -143,14 +157,29 @@ public class CashOut extends JPanel{
 		
 		player.paint(g2d);
 		inventory.paint(g2d);
+
 		g2d.setColor(front);
-		g2d.fillRect(75, frameHeight - 160, 10 * (MoneyBag.getTotalValue()/10/2), 50);
-		g2d.setColor(Color.decode("0x065C27"));
-		g2d.fillRect(75, frameHeight - 160, score/2, 50);
+		g2d.fillRect(75, frameHeight - 160, 10 * (MoneyBag.getTotalValue()/10/2), 50); //score
+		g2d.fillRect(75, frameHeight - 215, 200, 50); //suspicion
+		
+		g2d.setColor(Color.decode("0x065C27")); //score
+		g2d.fillRect(75, frameHeight - 160, score/2, 50); //score
+		g2d.setFont(fontBig);
+		g2d.drawString("$", 30, frameHeight - 115);
 		g2d.setColor(Color.white);
 		g2d.setFont(fontMedium);
 		g2d.drawString(String.valueOf(score), 90, frameHeight - 123);
 		
+		g2d.drawImage(suspicion, 15, frameHeight - 215, null); //suspicion
+		g2d.setColor(front); 
+		//g2d.fillRect(1010, 10, 170, 60); //box for timer
+		//g2d.setColor(Color.white);
+		g2d.setColor(Color.decode("0x065C27"));
+		g2d.drawString("Timer", 1020, 50);
+	
+		timer.paint(g2d);
+
+
 	}
 	
 	public void update(){
