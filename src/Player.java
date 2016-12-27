@@ -18,7 +18,6 @@ public class Player {
 	
 	private BufferedImage[] sprites = new BufferedImage[13];
 	private BufferedImage currentImg;
-	private boolean walking = false;
 	private int frame;
 	private double angle = 0;
 	private double totalAngle = 0;
@@ -64,27 +63,24 @@ public class Player {
 	}
 
 	public void move(double xM, double yM){
-		walking  = true;
 		if (yM == 5) xM = -5;
 		else xM = 5;
 		x += xM * Math.sin(Math.toRadians(angle));
 	    y += yM * Math.cos(Math.toRadians(angle));
 
-		//x += xM*10;
-		//y += yM*10;
 		if (frame < 12){
 			frame++;
 		}
 		else frame = 0;
 	}
+	
+	public void shoot(){
+		
+	}
 
 	public void turn(double angle){    
 		this.angle += angle;
 	    totalAngle+=angle;
-	}
-
-	public void stopMoving(){
-		walking = false;
 	}
 
 	public int getX() {
@@ -101,5 +97,5 @@ public class Player {
 	
 	public int getWidth(){
 		return width;
-	}
+	}	  
 }
