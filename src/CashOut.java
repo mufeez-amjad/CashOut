@@ -22,10 +22,12 @@ public class CashOut extends JPanel{
 	private Player player = new Player();
 	private Inventory inventory = new Inventory();
 	private static int score = 0;
-	public static Font font;
-	public static Font fontBig;
-	public static Font fontMedium;
-	public static Font fontSmall;
+	private static Font font;
+	private static Font fontBig;
+	private static Font fontMedium;
+	private static Font fontSmall;
+	private static Font fontTiny;
+
 
 	private static int frameHeight = 900;
 	private static int frameWidth = 1200;
@@ -44,7 +46,8 @@ public class CashOut extends JPanel{
 			font = Font.createFont(Font.TRUETYPE_FONT, new File("src/CashCurrency.ttf")); 
 			fontBig = font.deriveFont(Font.PLAIN, 90);
 			fontMedium = font.deriveFont(Font.PLAIN, 25);
-			fontSmall = font.deriveFont(Font.PLAIN, 18);
+			fontSmall = font.deriveFont(Font.PLAIN, 12);
+			fontTiny = font.deriveFont(Font.PLAIN, 9);
 		} catch (IOException|FontFormatException e) { 
 			System.out.println("CashCurrency.ttf could not be found");
 		}
@@ -185,6 +188,22 @@ public class CashOut extends JPanel{
 			panel.repaint();
 			Thread.sleep(7);
 		}
+	}
+	
+	public static Font getFontBig(){
+		return fontBig;
+	}
+	
+	public static Font getFontMedium(){
+		return fontMedium;
+	}
+	
+	public static Font getFontSmall(){
+		return fontSmall;
+	}
+	
+	public static Font getFontTiny(){
+		return fontTiny;
 	}
 
 }

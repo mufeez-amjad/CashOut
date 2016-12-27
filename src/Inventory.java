@@ -59,6 +59,7 @@ public class Inventory {
 				else g2d.setColor(Color.green);
 				g2d.fillOval(665, 729, 15, 15);
 				g2d.setColor(Color.WHITE);
+				g2d.setFont(CashOut.getFontTiny());
 				g2d.drawString(String.valueOf(Note.getCollected()), 669, 740);
 			}
 			if (isExpanded){

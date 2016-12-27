@@ -38,7 +38,8 @@ public class Note {
 		g2d.setColor(Color.black);
 		if (!isCollected){
 			g2d.drawImage(note, x, y, null);
-			g2d.drawString(String.valueOf(number), x + 10, y + 20);
+			g2d.setFont(CashOut.getFontSmall());
+			g2d.drawString(String.valueOf(number), x + 9, y + 22);
 		}
 	}
 
