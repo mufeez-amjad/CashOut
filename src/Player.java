@@ -29,7 +29,7 @@ public class Player {
 	private double angle = 0;
 	private Point gun = new Point((int) x + width - 5, (int) y);
 
-	private ArrayList<Bullet> nb = new ArrayList<Bullet>(10); 
+	private ArrayList<Bullet> nb = new ArrayList<Bullet>(9); 
 	private AffineTransformOp op;
 
 	public Player(){
@@ -43,8 +43,8 @@ public class Player {
 			sprites[i] = grabImage(1, i+1, 100);
 		}
 		currentImg = sprites[0];
-		x = 10;
-		y = 10;
+		x = 425;
+		y = 775;
 		width = currentImg.getWidth();
 		height = currentImg.getHeight();
 		
@@ -90,15 +90,6 @@ public class Player {
 	public void update(){
 		currentImg = sprites[frame];
 		
-	}
-
-	
-	public void rotateAround() {
-		double[] pt = {gunX, gunY};
-		AffineTransform.getRotateInstance(Math.toRadians(angle), gun.x, gun.y)
-		  .transform(pt, 0, pt, 0, 1); // specifying to use this double[] to hold coords
-		gunX = pt[0];
-		gunY = pt[1];
 	}
 	
 	public void move(double xM, double yM){
@@ -156,12 +147,12 @@ public class Player {
 
 	public void setNB(int x, int y, double angle)//sets position and movement of bullet
 	{
-		if (nb.size() > 10)
+		if (nb.size() > 9)
 		{
 			nb.set(0, null);
 			nb.remove(nb.get(0));//removes the bullets from the game when tried to exceed 3
 		}
-		if (nb.size() < 10)//only 3 shots allowed at a time
+		if (nb.size() < 9)//only 3 shots allowed at a time
 		{
 			nb.add(new Bullet(x, y, angle));//adds bullets to list when a new one is shot
 		}

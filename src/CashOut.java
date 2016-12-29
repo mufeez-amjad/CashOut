@@ -19,25 +19,23 @@ import javax.swing.*;
 
 public class CashOut extends JPanel{
 	private Note note = new Note();
-	private Note[] notes = new Note[4];
-	private MoneyBag[] money = new MoneyBag[4];
+	
 	private Player player = new Player();
 	private Inventory inventory = new Inventory();
 	
 	private Timer timer;
-	private Officer o;
-
 	
 	private BufferedImage suspicion;
-	private MazePuzzle m1 = new MazePuzzle(45);
-	
+	private int suspicionLevel = 0;
+	//private MazePuzzle m1 = new MazePuzzle(45);
+	//private PicturePuzzle p1 = new PicturePuzzle(500, 500);
 	private static int score = 0;
 	private static Font font;
 	private static Font fontBig;
 	private static Font fontMedium;
 	private static Font fontSmall;
 	private static Font fontTiny;
-
+	private Level first = new Level();
 
 	private static int frameHeight = 900;
 	private static int frameWidth = 1200;
@@ -68,13 +66,7 @@ public class CashOut extends JPanel{
 			System.err.println("Suspicion.png could not be found");
 		}
 		
-		for (int i = 0; i < notes.length; i++){
-			notes[i] = new Note();
-		}
 		
-		for (int i = 0; i < money.length; i++){
-			money[i] = new MoneyBag();
-		}
 		
 		addKeyListener(new KeyListener() {
 
@@ -105,7 +97,7 @@ public class CashOut extends JPanel{
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) 
 			      {
 			        //Creates bullets when the spacebar is pressed, as long as the user is not exceeding 3 at a time
-			        if(player.amountOfBullets() >= 0 && player.amountOfBullets() < 10)
+			        if(player.amountOfBullets() >= 0 && player.amountOfBullets() < 9)
 			        {
 			        player.setNB(player.getGunX(), player.getGunY(), player.getAngle());
 			        }
@@ -122,6 +114,7 @@ public class CashOut extends JPanel{
 					inventory.expandNotes();
 
 				}
+				//if (!p1.complete()) p1.clicked(e);
 			}
 
 			@Override
@@ -150,8 +143,7 @@ public class CashOut extends JPanel{
 			public void mouseDragged(MouseEvent e){ }
 		});
 		
-		timer = new Timer(1150, 40, 25, 50, "GREEN");
-		o = new Officer();
+		timer = new Timer(1150, 40, 25, 50, "WHITE");
 
 	}
 	
@@ -162,21 +154,13 @@ public class CashOut extends JPanel{
 		Color front = new Color(88, 89, 91, 127);
 		Color back = new Color(88, 89, 91, 75);
 		
-		g2d.setColor(Color.white); //remove when tilemap is added
-		g2d.fillRect(0, 0, frameWidth, frameHeight);
+		//g2d.setColor(Color.white); //remove when tilemap is added
+		//g2d.fillRect(0, 0, frameWidth, frameHeight);
+		first.paint(g2d);
 		
-		for (int i = 0; i < notes.length; i++){
-			notes[i].paint(g2d);
-		}
-		
-		for (int i = 0; i < money.length; i++){
-			money[i].paint(g2d);
-		}
-		
-		o.paint(g2d);
 		player.paint(g2d);		
 		inventory.paint(g2d);
-		
+		//p1.paint(g2d);
 		
 		g2d.setColor(front);
 		g2d.fillRect(75, frameHeight - 160, 10 * (MoneyBag.getTotalValue()/10/2), 50); //score
@@ -193,7 +177,8 @@ public class CashOut extends JPanel{
 		g2d.drawString(String.valueOf(score), 90, frameHeight - 123);
 		
 		g2d.drawImage(suspicion, 15, frameHeight - 215, null); //suspicion
-			
+		g2d.setColor(Color.YELLOW);
+		g2d.fillRect(75, frameHeight - 215, suspicionLevel/10, 50);	
 		timer.paint(g2d);
 		
 		//if (!m1.isFinished()) m1.paint(g2d);
@@ -203,22 +188,20 @@ public class CashOut extends JPanel{
 	
 	public void update(){
 		player.update();
-		m1.update();
+		//m1.update();
 		
-		for (int i = 0; i < notes.length; i++){
-			notes[i].collect(player);
-		}
-		
-		for (int i = 0; i < money.length; i++){
-			money[i].collect(player);
-		}
+		first.update(player, this);
 		
 		inventory.update(player);
-		o.collision(player.getNB());
 	}
 	
 	public static void addScore(int n){
 		score += n;
+	}
+	
+	public void addSuspicion(int n){
+		if (suspicionLevel < 2000) suspicionLevel += n;
+		else System.out.println("GAME OVER");
 	}
 	
 	public static void main(String[] args) throws InterruptedException {

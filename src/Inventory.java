@@ -59,7 +59,7 @@ public class Inventory {
 		if (numOfBullets < 5) g2d.setColor(Color.BLACK);
 		else g2d.setColor(Color.WHITE);
 
-		g2d.drawString(String.valueOf(10-numOfBullets), 527, 743);
+		g2d.drawString(String.valueOf(9-numOfBullets), 527, 743);
 				
 		g2d.drawImage(phone, 577, 727, null);
 		if (Note.getCollected() > 0){
