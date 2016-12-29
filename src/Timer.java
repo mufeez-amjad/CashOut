@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 
 public class Timer {
@@ -20,41 +21,51 @@ public class Timer {
 		this.size = size;
 		this.speed = speed;
 		progress *= this.speed;
-		
+
 		if (c.equals("RED")) color = Color.decode("0x990000");
 		else if (c.equals("GREEN")) color = Color.decode("0x065C27");
 		else if (c.equals("WHITE")) color = Color.white;
-		
-		
 	}
 
 	public void paint(Graphics2D g2d){
 		checkTime();
-		if (!timesUp && running ){
-			progress--;
-			Arc2D.Float arc = new Arc2D.Float(Arc2D.PIE);
-			g2d.translate(x, y);
-			g2d.rotate(Math.toRadians(270));
-			arc.setFrameFromCenter(new Point(0,0), new Point(size, size));
-			arc.setAngleStart(360);
-			arc.setAngleExtent(progress/speed);
-			g2d.setColor(color);
-			g2d.fill(arc);
-		}
+		AffineTransform old = g2d.getTransform(); //gets original painting properties
+		if (!timesUp && running ) progress--;
+		Arc2D.Float arc = new Arc2D.Float(Arc2D.PIE);
+		g2d.translate(x, y); //moves origin
+		g2d.rotate(Math.toRadians(270)); //rotates
+		arc.setFrameFromCenter(new Point(0,0), new Point(size, size));
+		arc.setAngleStart(360);
+		arc.setAngleExtent(progress/speed);
+		Color trans = new Color(color.getRed(), color.getGreen(), color.getBlue(), 200);
+		g2d.setColor(trans);
+		g2d.fill(arc);
+		g2d.setTransform(old); //resets back to original
+		g2d.setFont(CashOut.getFontMedium());
+		g2d.drawString("Timer", x - 130, y + 10);
 	}
-	
+
 	private void checkTime(){
 		if (-progress/speed >= 0){
 			timesUp = true;
 			running = false;
 		}
 	}
-	
-	private boolean getTimesUp(){
+
+	public void timesUp(){
+		timesUp = true;
+		running = false;
+	}
+
+	public boolean getTimesUp(){
 		return timesUp;
 	}
-	
-	private void stopStart(){
+
+	public boolean isRunning(){
+		return running;
+	}
+
+	public void stopStart(){
 		running = !running;
 	}
 }

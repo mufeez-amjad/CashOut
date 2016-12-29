@@ -13,6 +13,7 @@ public class Inventory {
 	private BufferedImage noteSmall;
 
 	private boolean isExpanded = false;
+	private int numOfBullets;
 
 	public Inventory(){
 		try { 
@@ -51,6 +52,15 @@ public class Inventory {
 		}
 
 		g2d.drawImage(gun, 477, 727, null);
+		Color color = new Color(55 + (20 * numOfBullets), 255 - numOfBullets * 21, 0);
+		g2d.setColor(color);
+		g2d.fillOval(520, 729, 20, 20);
+		g2d.setFont(CashOut.getFontTiny());
+		if (numOfBullets < 5) g2d.setColor(Color.BLACK);
+		else g2d.setColor(Color.WHITE);
+
+		g2d.drawString(String.valueOf(10-numOfBullets), 527, 743);
+				
 		g2d.drawImage(phone, 577, 727, null);
 		if (Note.getCollected() > 0){
 			g2d.drawImage(note, 677, 727, null);
@@ -99,7 +109,9 @@ public class Inventory {
 
 		}
 	}
-
+	public void update(Player p){
+		numOfBullets = p.amountOfBullets();
+	}
 
 	public void expandNotes(){
 		if (Note.getCollected() > 0){

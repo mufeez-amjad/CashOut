@@ -23,15 +23,14 @@ public class CashOut extends JPanel{
 	private MoneyBag[] money = new MoneyBag[4];
 	private Player player = new Player();
 	private Inventory inventory = new Inventory();
-<<<<<<< HEAD
+	
 	private Timer timer;
+	private Officer o;
+
 	
 	private BufferedImage suspicion;
-	private MazePuzzle mazePuzzle = new MazePuzzle(30);
+	private MazePuzzle m1 = new MazePuzzle(45);
 	
-=======
-	private MazePuzzle mazePuzzle = new MazePuzzle(30);
->>>>>>> origin/master
 	private static int score = 0;
 	private static Font font;
 	private static Font fontBig;
@@ -102,7 +101,17 @@ public class CashOut extends JPanel{
 				if(e.getKeyCode()==KeyEvent.VK_RIGHT){
 					player.turn(5);
 				} 
+				
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) 
+			      {
+			        //Creates bullets when the spacebar is pressed, as long as the user is not exceeding 3 at a time
+			        if(player.amountOfBullets() >= 0 && player.amountOfBullets() < 10)
+			        {
+			        player.setNB(player.getGunX(), player.getGunY(), player.getAngle());
+			        }
+			      }
 			}
+			
 		});
 		
 		addMouseListener(new MouseAdapter() {
@@ -136,23 +145,26 @@ public class CashOut extends JPanel{
 		
 		addMouseMotionListener(new MouseAdapter() {
 			public void mouseMoved(MouseEvent e) {
-				mazePuzzle.mouseMoved(e);
+				//m1.mouseMoved(e);
 			}
 			public void mouseDragged(MouseEvent e){ }
 		});
 		
 		timer = new Timer(1150, 40, 25, 50, "GREEN");
+		o = new Officer();
 
 	}
 	
 	public void paint(Graphics g){
-		Color front = new Color(88, 89, 91, 127);
-		Color back = new Color(88, 89, 91, 75);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				 RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.setColor(Color.white);
+		Color front = new Color(88, 89, 91, 127);
+		Color back = new Color(88, 89, 91, 75);
+		
+		g2d.setColor(Color.white); //remove when tilemap is added
 		g2d.fillRect(0, 0, frameWidth, frameHeight);
+		
 		for (int i = 0; i < notes.length; i++){
 			notes[i].paint(g2d);
 		}
@@ -161,20 +173,18 @@ public class CashOut extends JPanel{
 			money[i].paint(g2d);
 		}
 		
-		player.paint(g2d);
+		o.paint(g2d);
+		player.paint(g2d);		
 		inventory.paint(g2d);
-<<<<<<< HEAD
-
-		mazePuzzle.paint(g2d);
 		
-=======
-		mazePuzzle.paint(g2d);
->>>>>>> origin/master
+		
 		g2d.setColor(front);
 		g2d.fillRect(75, frameHeight - 160, 10 * (MoneyBag.getTotalValue()/10/2), 50); //score
 		g2d.fillRect(75, frameHeight - 215, 200, 50); //suspicion
 		
-		g2d.setColor(Color.decode("0x065C27")); //score
+		Color color = Color.decode("0x065C27"); //score
+		Color trans = new Color(color.getRed(), color.getGreen(), color.getBlue(), 200);
+		g2d.setColor(trans);
 		g2d.fillRect(75, frameHeight - 160, score/2, 50); //score
 		g2d.setFont(fontBig);
 		g2d.drawString("$", 30, frameHeight - 115);
@@ -183,20 +193,17 @@ public class CashOut extends JPanel{
 		g2d.drawString(String.valueOf(score), 90, frameHeight - 123);
 		
 		g2d.drawImage(suspicion, 15, frameHeight - 215, null); //suspicion
-		g2d.setColor(front); 
-		//g2d.fillRect(1010, 10, 170, 60); //box for timer
-		//g2d.setColor(Color.white);
-		g2d.setColor(Color.decode("0x065C27"));
-		g2d.drawString("Timer", 1020, 50);
-	
+			
 		timer.paint(g2d);
+		
+		//if (!m1.isFinished()) m1.paint(g2d);
 
 
 	}
 	
 	public void update(){
 		player.update();
-		mazePuzzle.update();
+		m1.update();
 		
 		for (int i = 0; i < notes.length; i++){
 			notes[i].collect(player);
@@ -206,6 +213,8 @@ public class CashOut extends JPanel{
 			money[i].collect(player);
 		}
 		
+		inventory.update(player);
+		o.collision(player.getNB());
 	}
 	
 	public static void addScore(int n){
