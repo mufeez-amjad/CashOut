@@ -24,7 +24,9 @@ public class CashOut extends JPanel{
 	private Inventory inventory = new Inventory();
 	
 	private Timer timer;
-	
+	private Level first = new Level();
+
+	private Menu menu = new Menu(inventory, first);
 	private BufferedImage suspicion;
 	private int suspicionLevel = 0;
 	//private MazePuzzle m1 = new MazePuzzle(45);
@@ -35,7 +37,11 @@ public class CashOut extends JPanel{
 	private static Font fontMedium;
 	private static Font fontSmall;
 	private static Font fontTiny;
-	private Level first = new Level();
+	private static Font fontHuge;
+
+	protected boolean isMenu = true;
+
+	
 
 	private static int frameHeight = 900;
 	private static int frameWidth = 1200;
@@ -51,8 +57,9 @@ public class CashOut extends JPanel{
 	public CashOut(){
 		
 		try { 
-			font = Font.createFont(Font.TRUETYPE_FONT, new File("src/CashCurrency.ttf")); 
-			fontBig = font.deriveFont(Font.PLAIN, 50);
+			font = Font.createFont(Font.TRUETYPE_FONT, new File("src/Fonts/CashCurrency.ttf")); 
+			fontHuge = font.deriveFont(Font.PLAIN, 50);
+			fontBig = font.deriveFont(Font.PLAIN, 35);
 			fontMedium = font.deriveFont(Font.PLAIN, 25);
 			fontSmall = font.deriveFont(Font.PLAIN, 12);
 			fontTiny = font.deriveFont(Font.PLAIN, 9);
@@ -61,7 +68,7 @@ public class CashOut extends JPanel{
 		}
 		
 		try { 
-			suspicion = ImageIO.read(getClass().getResource("/Suspicion.png"));
+			suspicion = ImageIO.read(getClass().getResource("/Images/Suspicion.png"));
 		} catch (IOException e) { 
 			System.err.println("Suspicion.png could not be found");
 		}
@@ -115,6 +122,7 @@ public class CashOut extends JPanel{
 
 				}
 				//if (!p1.complete()) p1.clicked(e);
+				if (isMenu) menu.mouseClicked(e);
 			}
 
 			@Override
@@ -139,6 +147,7 @@ public class CashOut extends JPanel{
 		addMouseMotionListener(new MouseAdapter() {
 			public void mouseMoved(MouseEvent e) {
 				//m1.mouseMoved(e);
+				
 			}
 			public void mouseDragged(MouseEvent e){ }
 		});
@@ -182,7 +191,7 @@ public class CashOut extends JPanel{
 		timer.paint(g2d);
 		
 		//if (!m1.isFinished()) m1.paint(g2d);
-
+		menu.paint(g2d);
 
 	}
 	
@@ -218,7 +227,7 @@ public class CashOut extends JPanel{
 		frame.setLocationRelativeTo(null); //centers the window
 
 		while (true){
-			panel.update();
+			//panel.update();
 			panel.repaint();
 			Thread.sleep(7);
 		}

@@ -14,7 +14,7 @@ public class Level {
 
 	public Level(){
 		try { 
-			level = ImageIO.read(getClass().getResource("/1st.png"));
+			level = ImageIO.read(getClass().getResource("/Images/1st.png"));
 		} catch (IOException e) { 
 			System.err.println("1st.png could not be found");
 		}
@@ -61,5 +61,22 @@ public class Level {
 		officer.collision(p.getNB(), p);
 		camera.update();
 
+	}
+	
+	public BufferedImage getBagImage(){
+		if (money.length > 0) return money[0].getImage();
+		return null;
+	}
+	
+	public BufferedImage getLaserImage(){
+		return laser.getImage();
+	}
+	
+	public BufferedImage getCameraImage(){
+		return camera.getImage();
+	}
+	
+	public BufferedImage getOfficerImage(){
+		return officer.getImage();
 	}
 }

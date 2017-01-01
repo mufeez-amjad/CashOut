@@ -17,28 +17,40 @@ public class Inventory {
 
 	public Inventory(){
 		try { 
-			note = ImageIO.read(getClass().getResource("/Note (Inventory).png"));
+			note = ImageIO.read(getClass().getResource("/Images/Note (Inventory).png"));
 		} catch (IOException e) { 
 			System.err.println("Note.png could not be found");
 		}
 
 		try { 
-			noteSmall = ImageIO.read(getClass().getResource("/Note.png"));
+			noteSmall = ImageIO.read(getClass().getResource("/Images/Note.png"));
 		} catch (IOException e) { 
 			System.err.println("Note.png could not be found");
 		} 
 
 		try { 
-			gun = ImageIO.read(getClass().getResource("/Gun (Inventory).png"));
+			gun = ImageIO.read(getClass().getResource("/Images/Gun (Inventory).png"));
 		} catch (IOException e) { 
 			System.err.println("Note.png could not be found");
 		}
 
 		try { 
-			phone = ImageIO.read(getClass().getResource("/Phone (Inventory).png"));
+			phone = ImageIO.read(getClass().getResource("/Images/Phone (Inventory).png"));
 		} catch (IOException e) { 
 			System.err.println("Note.png could not be found");
 		}
+	}
+	
+	public BufferedImage getNoteImg(){
+		return note;
+	}
+	
+	public BufferedImage getGunImg(){
+		return gun;
+	}
+	
+	public BufferedImage getHackImg(){
+		return phone;
 	}
 
 	public void paint(Graphics2D g2d){

@@ -27,7 +27,7 @@ public class MoneyBag {
 
 	public MoneyBag(){
 		try { 
-			bag = ImageIO.read(getClass().getResource("/MoneyBag.png"));
+			bag = ImageIO.read(getClass().getResource("/Images/MoneyBag.png"));
 		} catch (IOException e) { 
 			System.err.println("Note.png could not be found");
 		}
@@ -87,6 +87,10 @@ public class MoneyBag {
 
 	public static int getTotalValue(){
 		return totalValue;
+	}
+	
+	public BufferedImage getImage(){
+		return bag;
 	}
 
 }

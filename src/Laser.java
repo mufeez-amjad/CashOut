@@ -14,7 +14,7 @@ public class Laser {
 	
 	public Laser(int x, int y, int a){
 		try { 
-			laser = ImageIO.read(getClass().getResource("/Laser.png"));
+			laser = ImageIO.read(getClass().getResource("/Images/Laser.png"));
 		} catch (IOException e) { 
 			System.err.println("Laser.png could not be found");
 		}
@@ -39,5 +39,10 @@ public class Laser {
 			c.addSuspicion(250);
 		}
 	}
+
+	public BufferedImage getImage() {
+		return laser;
+	}
+	
 	
 }

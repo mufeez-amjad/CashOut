@@ -34,7 +34,7 @@ public class Player {
 
 	public Player(){
 		try { 
-			spriteSheet = ImageIO.read(getClass().getResource("/Sprites.png"));
+			spriteSheet = ImageIO.read(getClass().getResource("/Images/Sprites.png"));
 		} catch (IOException e) { 
 			System.err.println("Sprites3.png could not be found");
 		}
@@ -85,6 +85,8 @@ public class Player {
 	    else g2d.drawImage(currentImg, (int)x, (int)y, null);
 	    g2d.setColor(Color.blue);
 	    //g2d.fillOval((int)gunX, (int)gunY, 10, 10);
+	    
+	    g2d.fillOval((int) x + width/2, (int) y + width/2, 10, 10);
 	}
 
 	public void update(){

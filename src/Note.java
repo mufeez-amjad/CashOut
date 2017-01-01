@@ -23,7 +23,7 @@ public class Note {
 
 	public Note(){
 		try { 
-			note = ImageIO.read(getClass().getResource("/Note.png"));
+			note = ImageIO.read(getClass().getResource("/Images/Note.png"));
 		} catch (IOException e) { 
 			System.err.println("Note.png could not be found");
 		}
@@ -53,7 +53,9 @@ public class Note {
 
 	public void collect(Player p){
 		if (!isCollected){
-			if (p.getX() + p.getWidth()/2 > x && p.getY() + p.getHeight()/2 > y && p.getX() < x + width && p.getY() < y + height){
+			//	if (p.getX() + p.getWidth()/2 > x && p.getX() < x + width && p.getY() + p.getHeight()/2 > y && p.getY() < y + height){
+
+			if (p.getX() > x - 25 && p.getX() < x + width + 25 && p.getY() > y - 50 && p.getY() < y + height + 50){
 				notesCollected.add(number);
 				isCollected  = true;
 				collected++;

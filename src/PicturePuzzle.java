@@ -39,15 +39,15 @@ public class PicturePuzzle {
 		locationX = x;
 		locationY = y;
 		try {
-			img1 = ImageIO.read(getClass().getResource("dollar_01.gif"));
-			img2 = ImageIO.read(getClass().getResource("dollar_02.gif"));
-			img3 = ImageIO.read(getClass().getResource("dollar_03.gif"));
-			img4 = ImageIO.read(getClass().getResource("dollar_04.gif"));
-			img5 = ImageIO.read(getClass().getResource("dollar_05.gif"));
-			img6 = ImageIO.read(getClass().getResource("dollar_06.gif"));
-			img7 = ImageIO.read(getClass().getResource("dollar_07.gif"));
-			img8 = ImageIO.read(getClass().getResource("dollar_08.gif"));
-			img9 = ImageIO.read(getClass().getResource("dollar_09.gif"));
+			img1 = ImageIO.read(getClass().getResource("/Images/dollar_01.gif"));
+			img2 = ImageIO.read(getClass().getResource("/Images/dollar_02.gif"));
+			img3 = ImageIO.read(getClass().getResource("/Images/dollar_03.gif"));
+			img4 = ImageIO.read(getClass().getResource("/Images/dollar_04.gif"));
+			img5 = ImageIO.read(getClass().getResource("/Images/dollar_05.gif"));
+			img6 = ImageIO.read(getClass().getResource("/Images/dollar_06.gif"));
+			img7 = ImageIO.read(getClass().getResource("/Images/dollar_07.gif"));
+			img8 = ImageIO.read(getClass().getResource("/Images/dollar_08.gif"));
+			img9 = ImageIO.read(getClass().getResource("/Images/dollar_09.gif"));
 			masterPuzzle[0][0] = img1;
 			masterPuzzle[0][1] = img2;
 			masterPuzzle[0][2] = img3;

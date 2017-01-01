@@ -18,7 +18,7 @@ public class Camera {
 	public Camera(int x, int y, int a){
 		try 
 		{ 
-			camera = ImageIO.read(getClass().getResource("/Camera.png"));
+			camera = ImageIO.read(getClass().getResource("/Images/Camera.png"));
 		} catch (IOException e) { 
 			System.err.println("Camera.png could not be found");
 		}
@@ -31,18 +31,18 @@ public class Camera {
 	}
 	
 	public void paint(Graphics2D g2d){
-		g2d.translate(beamX, beamY);
+		//g2d.translate(beamX, beamY);
 		double rotationRequired = Math.toRadians (angle);
 		double locationX = camera.getWidth() / 2;
 		double locationY = camera.getHeight() / 2;
 		AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-		g2d.drawImage(op.filter(camera, null), 0, 0, null);
+		g2d.drawImage(op.filter(camera, null), beamX-110, beamY+ 25, null);
 		
 		//g2d.setColor(Color.darkGray);
 		//g2d.fillOval(x - 5, y + 10, 20, 20);
 		g2d.setColor(Color.gray);
-		g2d.fillOval(0, 0, 30, 30);
+		g2d.fillOval(x, y, 30, 30);
 		
 		int cX = x - 15;
 	    int cY = 0;
@@ -59,5 +59,9 @@ public class Camera {
 		//if (angle < 45) angle += 1;
 		//else 
 		//else angle = 0;
+	}
+
+	public BufferedImage getImage() {
+		return camera;
 	}
 }

@@ -19,7 +19,7 @@ public class Bullet
 	{   
 		//Get the image of the normal bullet
 		try { 
-			bullet = ImageIO.read(getClass().getResource("/Bullet.png"));
+			bullet = ImageIO.read(getClass().getResource("/Images/Bullet.png"));
 		} catch (IOException e) { 
 			System.err.println("Bullet.png could not be found");
 		}

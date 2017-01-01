@@ -23,7 +23,7 @@ public class MazePuzzle {
 
 	public MazePuzzle(int secs) {
 		try {
-			maze = ImageIO.read(getClass().getResource("mousemaze.png"));
+			maze = ImageIO.read(getClass().getResource("/Images/mousemaze.png"));
 		} catch (IOException e) {
 			System.out.println("error");
 		}

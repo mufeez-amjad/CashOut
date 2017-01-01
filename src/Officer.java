@@ -21,13 +21,13 @@ public class Officer {
 
 	public Officer(){
 		try { 
-			officer = ImageIO.read(getClass().getResource("/Officer.png"));
+			officer = ImageIO.read(getClass().getResource("/Images/Officer.png"));
 		} catch (IOException e) { 
 			System.err.println("Officer.png could not be found");
 		}
 
 		try { 
-			blood = ImageIO.read(getClass().getResource("/blood.png"));
+			blood = ImageIO.read(getClass().getResource("/Images/blood.png"));
 		} catch (IOException e) { 
 			System.err.println("Officer.png could not be found");
 		}
@@ -77,6 +77,10 @@ public class Officer {
 				c.addSuspicion(3);
 			}
 		}
+	}
+
+	public BufferedImage getImage() {
+		return officer;
 	}
 }
 
