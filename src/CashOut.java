@@ -29,12 +29,12 @@ public class CashOut extends JPanel{
 
 	private Levels levels;
 	
-	private Level1 l;
+	private Level1 l = new Level1(this);
 
 	private Menu menu;
 
 	private BufferedImage suspicion;
-	private int suspicionLevel = 0;
+	private double suspicionLevel = 0;
 	//private MazePuzzle m1 = new MazePuzzle(45);
 	//private PicturePuzzle p1 = new PicturePuzzle(500, 500);
 	private int score = 0;
@@ -58,6 +58,8 @@ public class CashOut extends JPanel{
 	private boolean soundOn = true;
 
 	private boolean musicOn = true;
+
+	private boolean gameOver = false;
 
 	private static int frameHeight = 900;
 	private static int frameWidth = 1200;
@@ -149,7 +151,7 @@ public class CashOut extends JPanel{
 
 					if (e.getKeyCode() == KeyEvent.VK_X) 
 					{
-						player.printAngle();
+						levels.getCurrent().keyPressed(e, player);
 					}
 				}
 
@@ -242,7 +244,7 @@ public class CashOut extends JPanel{
 		Color trans = new Color(color.getRed(), color.getGreen(), color.getBlue(), 200);
 		g2d.setColor(trans);
 		g2d.fillRect(75, frameHeight - 160, score/2, 50); //score
-		g2d.setFont(fontBig);
+		g2d.setFont(fontHuge);
 		g2d.drawString("$", 30, frameHeight - 115);
 		g2d.setColor(Color.white);
 		g2d.setFont(fontMedium);
@@ -250,9 +252,12 @@ public class CashOut extends JPanel{
 
 		g2d.drawImage(suspicion, 15, frameHeight - 215, null); //suspicion
 		g2d.setColor(Color.YELLOW);
-		g2d.fillRect(75, frameHeight - 215, suspicionLevel/10, 50);	
+		g2d.fillRect(75, frameHeight - 215, (int) suspicionLevel/10, 50);	
 
-		if (!playing) menu.paint(g2d);
+		if (!playing){
+			menu.paint(g2d);
+		}
+		
 		if (playing){
 			Color fade = new Color(0, 0, 0, fadeIn);
 			if (fadeIn > 0) fadeIn -= 3;
@@ -292,6 +297,7 @@ public class CashOut extends JPanel{
 			levels.update(player, this);
 
 			inventory.update(player);
+			if (suspicionLevel > 0) suspicionLevel-= 0.25;
 		}
 	}
 
@@ -301,7 +307,10 @@ public class CashOut extends JPanel{
 
 	public void addSuspicion(int n){
 		if (suspicionLevel < 2000) suspicionLevel += n;
-		else System.out.println("GAME OVER");
+		else{
+			gameOver = true;
+			playing = false;
+		}
 	}
 
 	public void setDifficulty(int n){
@@ -365,6 +374,10 @@ public class CashOut extends JPanel{
 		}
 	}
 
+	public static Font getFontHuge(){
+		return fontHuge;
+	}
+	
 	public static Font getFontBig(){
 		return fontBig;
 	}
@@ -393,5 +406,15 @@ public class CashOut extends JPanel{
 	public void setSound(boolean state) {
 		this.soundOn = state;
 	}
+	
+	public int getScore(){
+		return score;
+	}
+	
+	public boolean getGameOver(){
+		return gameOver;
+	}
+	
+	
 
 }

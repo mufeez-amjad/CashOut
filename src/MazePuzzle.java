@@ -20,6 +20,7 @@ public class MazePuzzle {
 	private boolean lose = false;
 	private boolean ready = false;
 	private Timer timer;
+	private int seconds;
 
 	public MazePuzzle(int secs) {
 		try {
@@ -27,7 +28,6 @@ public class MazePuzzle {
 		} catch (IOException e) {
 			System.out.println("error");
 		}
-		timer = new Timer(1150, 40, 25, secs/3, "WHITE", true);
 		Rectangle r1 = new Rectangle(0, 37, 492, 41);
 		Rectangle r2 = new Rectangle(448, 78, 44, 275);
 		Rectangle r3 = new Rectangle(492, 315, 210, 38);
@@ -38,6 +38,8 @@ public class MazePuzzle {
 		Rectangle r8 = new Rectangle(39, 496, 42, 370);
 		Rectangle r9 = new Rectangle(39, 496, 628, 42);
 		Rectangle r10 = new Rectangle(667, 448, 164, 151);
+		seconds = secs;
+		timer = new Timer(1150, 100, 15, seconds/3, "WHITE", true);
 
 		hitboxes.add(r1);
 		hitboxes.add(r2);
@@ -137,7 +139,23 @@ public class MazePuzzle {
 
 	}
 	
-	public Boolean isFinished(){
+	public boolean isFinished(){
 		return lose || win;
+	}
+	
+	public boolean isWin(){
+		return win;
+	}
+	
+	public boolean isLose(){
+		return lose;
+	}
+	
+	public void reset(){
+		timer = new Timer(1150, 100, 15, seconds/3, "WHITE", true);
+		lose = false;
+		inMaze = false;
+		ready = false;
+		
 	}
 }
