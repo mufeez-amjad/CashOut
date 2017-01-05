@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 public class Player {
 	private BufferedImage spriteSheet;
@@ -21,7 +24,9 @@ public class Player {
 	
 	private double gunX;
 	private double gunY;
-
+	
+	private double pointX;
+	private double pointY;
 
 	private BufferedImage[] sprites = new BufferedImage[13];
 	private BufferedImage currentImg;
@@ -31,8 +36,13 @@ public class Player {
 
 	private ArrayList<Bullet> nb = new ArrayList<Bullet>(9); 
 	private AffineTransformOp op;
+	private CashOut game;
 
-	public Player(){
+	private double pointY2;
+
+	private double pointX2;
+	
+	public Player(CashOut c){
 		try { 
 			spriteSheet = ImageIO.read(getClass().getResource("/Images/Sprites.png"));
 		} catch (IOException e) { 
@@ -50,6 +60,11 @@ public class Player {
 		
 		gunX = (int) x + width - 15;
 		gunY = (int) y;
+		pointX = x + width/2;
+		pointY = y + 20;
+		pointX2 = x + width/2;
+		pointY2 = y + height - 20;
+		game = c;
 	}
 
 	public BufferedImage grabImage(int col, int row, int length){
@@ -86,8 +101,9 @@ public class Player {
 	    g2d.setColor(Color.blue);
 	    //g2d.fillOval((int)gunX, (int)gunY, 10, 10);
 	    
-	    g2d.fillOval((int) x + width/2, (int) y + width/2, 10, 10);
-	}
+	    g2d.fillOval((int) pointX, (int) pointY, 10, 10);
+	    g2d.fillOval((int) pointX2, (int) pointY2, 10, 10);
+	    }
 
 	public void update(){
 		currentImg = sprites[frame];
@@ -97,8 +113,25 @@ public class Player {
 	public void move(double xM, double yM){
 		if (yM == 5) xM = -5;
 		else xM = 5;
+		
+		
 		x += xM * Math.sin(Math.toRadians(angle));
 		y += yM * Math.cos(Math.toRadians(angle));
+		
+		/*
+		double xTemp = x;
+		double yTemp = y;
+		double xTemp2 = pointX2;
+		double yTemp2 = pointY2;
+		
+		
+		
+		
+		if (!l.hit((int) xTemp, (int) yTemp) && !l.hit((int) xTemp2, (int) yTemp2)){
+			x = xTemp;
+			y = yTemp;
+		}
+		*/
 		
 		if (frame < 12){
 			frame++;
@@ -121,6 +154,26 @@ public class Player {
 	    tx.transform(pt1, pt2);
 	    gunX=(int)x+pt2.x; 
 	    gunY=(int)y+pt2.y;
+	    if (this.angle == 360){
+	    	this.angle = 0;
+	    }
+	    
+	    int px = currentImg.getWidth()/2;
+	    int py = 20;
+	    
+	    Point pt3=new Point(px, py);
+	    Point pt4=new Point();
+	    tx.transform(pt3, pt4);
+	    pointX=(int)x+pt4.x; 
+	    pointY=(int)y+pt4.y;
+	  
+	    int px2 = currentImg.getWidth()/2;
+	    int py2 = height  - 20;
+	    Point pt5=new Point(px2, py2);
+	    Point pt6=new Point();
+	    tx.transform(pt5, pt6);
+	    pointX2 = (int)x+pt6.x;
+	    pointY2= (int)y+pt6.y;	    
 	}
 
 	public int getX() {
@@ -146,6 +199,32 @@ public class Player {
 	public int getWidth(){
 		return width;
 	}
+	
+	public synchronized void playGunshot() { //plays the pop sound effect
+		try {
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
+					this.getClass().getResource("/Audio/gunshot.wav"));
+			Clip clip = AudioSystem.getClip();
+			clip.open(audioInputStream);
+			clip.start();
+		} catch(Exception ex) {
+			System.out.println("Error with playing sound.");
+			ex.printStackTrace();
+		}
+	}
+	
+	public synchronized void playDryFire() { //plays the pop sound effect
+		try {
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
+					this.getClass().getResource("/Audio/dry_fire.wav"));
+			Clip clip = AudioSystem.getClip();
+			clip.open(audioInputStream);
+			clip.start();
+		} catch(Exception ex) {
+			System.out.println("Error with playing sound.");
+			ex.printStackTrace();
+		}
+	}
 
 	public void setNB(int x, int y, double angle)//sets position and movement of bullet
 	{
@@ -154,9 +233,11 @@ public class Player {
 			nb.set(0, null);
 			nb.remove(nb.get(0));//removes the bullets from the game when tried to exceed 3
 		}
+		
 		if (nb.size() < 9)//only 3 shots allowed at a time
 		{
 			nb.add(new Bullet(x, y, angle));//adds bullets to list when a new one is shot
+			if (game.getSoundState()) playGunshot();
 		}
 	}
 	
@@ -203,5 +284,17 @@ public class Player {
 	public int amountOfBullets() //checks amount of bullets in game
 	{
 		return nb.size();
+	}
+	
+	public void printAngle(){
+		System.out.println(angle);
+	}
+	
+	public Point getPoint(){
+		return new Point((int) pointX, (int) pointY);
+	}
+	
+	public Point getPoint2(){
+		return new Point((int) pointX2, (int) pointY2);
 	}
 }

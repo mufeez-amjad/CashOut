@@ -1,4 +1,5 @@
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -11,8 +12,9 @@ public class Laser {
 	private int y;
 	private int angle;
 	private boolean active = true;
+	private MazePuzzle m;
 	
-	public Laser(int x, int y, int a){
+	public Laser(int x, int y, int a, int secs){
 		try { 
 			laser = ImageIO.read(getClass().getResource("/Images/Laser.png"));
 		} catch (IOException e) { 
@@ -22,6 +24,7 @@ public class Laser {
 		this.x = x;
 		this.y = y;
 		angle = a;
+		m = new MazePuzzle(secs);
 	}
 	
 	public void paint(Graphics2D g2d){
@@ -32,16 +35,24 @@ public class Laser {
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 		if (active) g2d.drawImage(op.filter(laser, null), x, y, null);
 		//g2d.fillRect(x, y, 25, 120);
+		
+		if (!m.isFinished()) m.paint(g2d);
 	}
 	
 	public void update(Player p, CashOut c){
 		if (p.getX() > x && p.getX() < x + 100 && p.getY() > y && p.getY() < y + p.getWidth()){
 			c.addSuspicion(250);
 		}
+		
+		if (!m.isFinished()) m.update();
 	}
 
 	public BufferedImage getImage() {
 		return laser;
+	}
+	
+	public void mouseMoved(MouseEvent e){
+		m.mouseMoved(e);
 	}
 	
 	

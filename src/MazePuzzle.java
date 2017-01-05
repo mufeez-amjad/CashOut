@@ -27,18 +27,7 @@ public class MazePuzzle {
 		} catch (IOException e) {
 			System.out.println("error");
 		}
-		timer = new Timer(1150, 40, 25, secs/3, "WHITE");
-		/*timer = new Timer();
-		int delay = 1000;
-		int period = 1000;
-		interval = secs;
-		timer.scheduleAtFixedRate(new TimerTask() {
-
-			public void run() {
-				countdown();
-			}
-		}, delay, period);
-		 */
+		timer = new Timer(1150, 40, 25, secs/3, "WHITE", true);
 		Rectangle r1 = new Rectangle(0, 37, 492, 41);
 		Rectangle r2 = new Rectangle(448, 78, 44, 275);
 		Rectangle r3 = new Rectangle(492, 315, 210, 38);
@@ -73,8 +62,8 @@ public class MazePuzzle {
 			int alpha = 127; // 50% transparent
 			Color redTrans = new Color(255, 0, 0, alpha);
 			Color greenTrans = new Color(0, 255, 0, alpha);
-			g2d.setColor(Color.BLACK);
-			g2d.fillRect(0, 0, 1200, 900); // remove after tilemap is added
+			//g2d.setColor(Color.BLACK);
+			//g2d.fillRect(0, 0, 1200, 900); // remove after tilemap is added
 			//g2d.drawImage(maze, 0, 0, null);
 			if (!inMaze || lose){
 				g2d.setColor(redTrans);

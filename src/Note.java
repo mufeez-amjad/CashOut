@@ -53,9 +53,9 @@ public class Note {
 
 	public void collect(Player p){
 		if (!isCollected){
-			//	if (p.getX() + p.getWidth()/2 > x && p.getX() < x + width && p.getY() + p.getHeight()/2 > y && p.getY() < y + height){
-
-			if (p.getX() > x - 25 && p.getX() < x + width + 25 && p.getY() > y - 50 && p.getY() < y + height + 50){
+			int pX = p.getPoint().x;
+			int pY = p.getPoint().y;
+			if (pX > x && pX < x + width && pY > y && pY < y + height){
 				notesCollected.add(number);
 				isCollected  = true;
 				collected++;

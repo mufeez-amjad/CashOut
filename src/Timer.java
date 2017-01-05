@@ -12,16 +12,16 @@ public class Timer {
 	private int size;
 	private int speed;
 	private boolean timesUp = false;
-	private boolean running = true;
+	private boolean running = false;
 	private Color color;
 
-	public Timer(int x, int y, int size, int speed, String c){
+	public Timer(int x, int y, int size, int speed, String c, boolean state){
 		this.x = x;
 		this.y = y;
 		this.size = size;
 		this.speed = speed;
 		progress *= this.speed;
-
+		running = state;
 		if (c.equals("RED")) color = Color.decode("0x990000");
 		else if (c.equals("GREEN")) color = Color.decode("0x065C27");
 		else if (c.equals("WHITE")) color = Color.white;
@@ -30,7 +30,7 @@ public class Timer {
 	public void paint(Graphics2D g2d){
 		checkTime();
 		AffineTransform old = g2d.getTransform(); //gets original painting properties
-		if (!timesUp && running ) progress--;
+		if (!timesUp && running) progress--;
 		Arc2D.Float arc = new Arc2D.Float(Arc2D.PIE);
 		g2d.translate(x, y); //moves origin
 		g2d.rotate(Math.toRadians(270)); //rotates

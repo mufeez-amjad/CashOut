@@ -24,8 +24,9 @@ public class MoneyBag {
 	private boolean animated = false;
 	private static int totalValue = 0;
 	private int counter = 0;
+	private CashOut game;
 
-	public MoneyBag(){
+	public MoneyBag(CashOut c){
 		try { 
 			bag = ImageIO.read(getClass().getResource("/Images/MoneyBag.png"));
 		} catch (IOException e) { 
@@ -38,6 +39,7 @@ public class MoneyBag {
 		y = rand.nextInt(800);
 		width = bag.getWidth();
 		height = bag.getHeight();
+		game = c;
 	}
 
 	public void paint(Graphics2D g2d){
@@ -60,22 +62,25 @@ public class MoneyBag {
 	}
 
 	public void collect(Player p){
+		int pX = p.getPoint().x;
+		int pY = p.getPoint().y;
+		
 		if (!isCollected){
-			if (p.getX() + p.getWidth()/2 > x && p.getY() + p.getHeight()/2 > y && p.getX() < x + width && p.getY() < y + height){
+			if (pX > x && pY > y && pX < x + width && pY < y + height){
 				isCollected  = true;
-				CashOut.addScore(value);
-				playSound();
+				game.addScore(value);
+				if (game.getSoundState()) playSound();
 			}
 		}
 	}
 	
-	public static synchronized void playSound() { //plays the pop sound effect
+	public synchronized void playSound() { //plays the sound effect
 		new Thread(new Runnable() { //creates a new thread
 			public void run() {
 				try { //contains code that might throw an exception
 					Clip clip = AudioSystem.getClip();
 					AudioInputStream inputStream = AudioSystem.getAudioInputStream(
-							this.getClass().getResource("MoneySoundEffect.wav")); //imports the audio file
+							this.getClass().getResource("Audio/cha-ching.wav")); //imports the audio file
 					clip.open(inputStream);
 					clip.start(); //plays the sound
 				} catch (Exception e) { //handles exception if the file is not found

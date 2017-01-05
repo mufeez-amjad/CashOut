@@ -54,11 +54,6 @@ public class Officer {
 	}
 
 	public void collision(ArrayList<Bullet> nb, Player p){
-		/*for (Bullet b: nb){
-			if (b.getX() > x && b.getX() < x + officer.getWidth() && b.getY() > y && b.getY() < y + officer.getHeight()){
-				dead = true;
-			}
-		}*/
 		if (!dead) {
 			for (Iterator<Bullet> iterator = nb.iterator(); iterator.hasNext();) {
 				Bullet b = iterator.next();
@@ -70,12 +65,13 @@ public class Officer {
 		}
 	}
 	
-	public void update(Player p, CashOut c){
+	public void update(Player p, CashOut c, ArrayList<Bullet> nb){
 		if (!dead){
 			if (p.getX() > x - 200 && p.getX() < x + 200 && p.getY() > y - 200 && p.getY() < y + 200){
 				//System.out.println("CLOSE");
 				c.addSuspicion(3);
 			}
+			collision(nb, p);
 		}
 	}
 
