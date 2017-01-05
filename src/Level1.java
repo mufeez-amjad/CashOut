@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -12,8 +11,8 @@ public class Level1 extends Level{
 	private BufferedImage level;
 	private Note[] notes = new Note[4];
 	private MoneyBag[] money = new MoneyBag[5];
-	private Officer[] officers = new Officer[2];
 	private Laser laser;
+	private Officer officer; 
 	private Camera camera;
 	private ArrayList<Rectangle> hits = new ArrayList<Rectangle>();
 	private Timer timer;
@@ -35,20 +34,15 @@ public class Level1 extends Level{
 		for (int i = 0; i < money.length; i++){
 			money[i] = new MoneyBag(c);
 		}
-		
 		laser = new Laser(700, 52, 90, 30);
-		
-		for (int i = 0; i < officers.length; i++){
-			officers[i] = new Officer();
-		}
-		
+		officer = new Officer();
 		camera = new Camera (1075, 52, 0);
 
 		hits.add(new Rectangle(756, 0, 444, 50));
 		hits.add(new Rectangle(756, 167, 87, 66));
 		hits.add(new Rectangle(843, 167, 110, 733));
 		hits.add(new Rectangle(1090, 167, 105, 733));
-		timer = new Timer(1150, 40, 25, 75, "WHITE", false);
+		timer = new Timer(1150, 40, 25, 50, "WHITE", false);
 	}
 
 	public void paint(Graphics2D g2d){
@@ -62,9 +56,7 @@ public class Level1 extends Level{
 			money[i].paint(g2d);
 		}
 		laser.paint(g2d);
-		for (int i = 0; i < officers.length; i++){
-			officers[i].paint(g2d);
-		}
+		officer.paint(g2d);
 		camera.paint(g2d);
 		/*g2d.setColor(Color.red);
 		g2d.fillRect(756, 0, 444, 50);
@@ -86,9 +78,7 @@ public class Level1 extends Level{
 		}
 
 		laser.update(p, c);
-		for (int i = 0; i < officers.length; i++){
-			officers[i].update(p, c, p.getNB());
-		}
+		officer.update(p, c, p.getNB());
 		camera.update();
 	}
 
@@ -107,7 +97,7 @@ public class Level1 extends Level{
 	}
 
 	public BufferedImage getOfficerImage(){
-		return officers[0].getImage();
+		return officer.getImage();
 	}
 
 	public boolean hit(int x, int y){
@@ -154,10 +144,6 @@ public class Level1 extends Level{
 	public void mouseMoved(MouseEvent e) {
 		laser.mouseMoved(e);
 		
-	}
-	
-	public void keyPressed(KeyEvent e, Player p) {
-		laser.keyPressed(e, p);
 	}
 
 }

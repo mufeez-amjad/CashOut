@@ -98,10 +98,11 @@ public class Player {
 		// Drawing the rotated image at the required drawing locations
 		if(op!=null) g2d.drawImage(op.filter(currentImg, null), (int)x, (int)y, null);
 	    else g2d.drawImage(currentImg, (int)x, (int)y, null);
-	    //g2d.setColor(Color.blue);
+	    g2d.setColor(Color.blue);
 	    //g2d.fillOval((int)gunX, (int)gunY, 10, 10);
-	    //g2d.fillOval((int) pointX, (int) pointY, 10, 10);
-	    //g2d.fillOval((int) pointX2, (int) pointY2, 10, 10);
+	    
+	    g2d.fillOval((int) pointX, (int) pointY, 10, 10);
+	    g2d.fillOval((int) pointX2, (int) pointY2, 10, 10);
 	    }
 
 	public void update(){
