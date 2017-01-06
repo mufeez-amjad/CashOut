@@ -18,8 +18,6 @@ public class Note {
 	private boolean isCollected = false;
 	private int width;
 	private int height;
-	private static int collected = 0;
-	private static ArrayList<Integer> notesCollected = new ArrayList<Integer>();
 
 	public Note(){
 		try { 
@@ -51,23 +49,19 @@ public class Note {
 		return y;
 	}
 
-	public void collect(Player p){
+	public void collect(Player p, Level l){
 		if (!isCollected){
 			int pX = p.getPoint().x;
 			int pY = p.getPoint().y;
 			if (pX > x && pX < x + width && pY > y && pY < y + height){
-				notesCollected.add(number);
+				l.addNotesValues(number);
 				isCollected  = true;
-				collected++;
+				l.addNotesCollected(1);
 			}
 		}
 	}
 
-	public static int getCollected(){
-		return collected;
-	}
-
-	public static ArrayList<Integer> getNotes(){
-		return notesCollected;
+	public Integer getNumber() {
+		return number;
 	}
 }

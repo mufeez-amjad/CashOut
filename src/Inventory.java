@@ -29,29 +29,32 @@ public class Inventory {
 	private int num4;
 
 	private boolean isExpanded = false;
+	private int numOfBullets;
+	private Level current;
+	private Levels levels;
 
 	public Inventory() {
 
 		try {
-			note = ImageIO.read(getClass().getResource("/Note (Inventory).png"));
+			note = ImageIO.read(getClass().getResource("/Images/Note (Inventory).png"));
 		} catch (IOException e) {
 			System.err.println("Note.png could not be found");
 		}
 
 		try {
-			noteSmall = ImageIO.read(getClass().getResource("/Note.png"));
+			noteSmall = ImageIO.read(getClass().getResource("/Images/Note.png"));
 		} catch (IOException e) {
 			System.err.println("Note.png could not be found");
 		}
 
 		try {
-			gun = ImageIO.read(getClass().getResource("/Gun (Inventory).png"));
+			gun = ImageIO.read(getClass().getResource("/Images/Gun (Inventory).png"));
 		} catch (IOException e) {
 			System.err.println("Note.png could not be found");
 		}
 
 		try {
-			phone = ImageIO.read(getClass().getResource("/Phone (Inventory).png"));
+			phone = ImageIO.read(getClass().getResource("/Images/Phone (Inventory).png"));
 		} catch (IOException e) {
 			System.err.println("Note.png could not be found");
 		}
@@ -73,7 +76,6 @@ public class Inventory {
 			r[i].width = noteSmall.getWidth();
 			r[i].height = noteSmall.getHeight();
 		}
-		
 	}
 
 	public void paint(Graphics2D g2d) {
@@ -87,82 +89,94 @@ public class Inventory {
 		}
 
 		g2d.drawImage(gun, 477, 727, null);
+		Color color = new Color(55 + (20 * numOfBullets), 255 - numOfBullets * 21, 0);
+		g2d.setColor(color);
+		g2d.fillOval(520, 729, 20, 20);
+		g2d.setFont(CashOut.getFontTiny());
+		if (numOfBullets < 5) g2d.setColor(Color.BLACK);
+		else g2d.setColor(Color.WHITE);
+
+		g2d.drawString(String.valueOf(9-numOfBullets), 527, 743);
+
 		g2d.drawImage(phone, 577, 727, null);
-		if (Note.getCollected() > 0) {
-			g2d.drawImage(note, 677, 727, null);
-			if (Note.getCollected() > 1) {
-				if (Note.getCollected() < 4)
-					g2d.setColor(Color.decode("0x990000"));
-				else
-					g2d.setColor(Color.decode("0x065C27"));
+		
+		if (current != null){
+			if (current.getNotesCollected() > 0) {
+				g2d.drawImage(note, 677, 727, null);
+				if (current.getNotesCollected() > 1) {
+					if (current.getNotesCollected() < 4)
+						g2d.setColor(Color.decode("0x990000"));
+					else
+						g2d.setColor(Color.decode("0x065C27"));
 
-				g2d.fillOval(715, 729, 15, 15);
-				g2d.setColor(Color.WHITE);
-				g2d.setFont(CashOut.getFontTiny());
-				g2d.drawString(String.valueOf(Note.getCollected()), 719, 740);
-			}
-			if (isExpanded) {
-				g2d.setColor(front);
-				int[] xPoints = { 700, 710, 720 };
-				int[] yPoints = { 700, 710, 700 };
-				g2d.fillPolygon(xPoints, yPoints, 3);
+					g2d.fillOval(715, 729, 15, 15);
+					g2d.setColor(Color.WHITE);
+					g2d.setFont(CashOut.getFontTiny());
+					g2d.drawString(String.valueOf(current.getNotesCollected()), 719, 740);
+				}
+				if (isExpanded) {
+					g2d.setColor(front);
+					int[] xPoints = { 700, 710, 720 };
+					int[] yPoints = { 700, 710, 700 };
+					g2d.fillPolygon(xPoints, yPoints, 3);
 
-				g2d.fillRect(684 - (50 * (Note.getCollected() - 1)) / 2, 650, 50 * Note.getCollected(), 50);
-				for (int i = 0; i < Note.getCollected(); i++) {
-					num1 = Note.getNotes().get(3);
-					num2 = Note.getNotes().get(2);
-					num3 = Note.getNotes().get(1);
-					num4 = Note.getNotes().get(0);
+					g2d.fillRect(684 - (50 * (current.getNotesCollected() - 1)) / 2, 650, 50 * current.getNotesCollected(), 50);
+					for (int i = 0; i < current.getNotesValues().size(); i++) {
+							g2d.setColor(Color.black);
+						if (current.getNotesCollected() == 1) {
+							if (firstDragged) {
+								g2d.drawImage(noteSmall, x, y, null);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), x, y);
+							} else {
+								g2d.drawImage(noteSmall, 746 - 50, 658, null);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), 706, 679);
+							}
 
-					g2d.setColor(Color.black);
-					if (Note.getCollected() == 1) {
-						if (firstDragged) {
-							g2d.drawImage(noteSmall, x, y, null);
-							g2d.drawString(String.valueOf(Note.getNotes().get(i)), x, y);
-						} else {
-							g2d.drawImage(noteSmall, 746 - 50, 658, null);
-							g2d.drawString(String.valueOf(Note.getNotes().get(i)), 706, 679);
 						}
 
-					}
-
-					else if (Note.getCollected() == 2) {
-						g2d.drawImage(noteSmall, 720 - 50 * i, 658, null);
-						g2d.drawString(String.valueOf(Note.getNotes().get(i)), 730 - 50 * i, 679);
-					}
-
-					else if (Note.getCollected() == 3) {
-						g2d.drawImage(noteSmall, 746 - 50 * i, 658, null);
-						g2d.drawString(String.valueOf(Note.getNotes().get(i)), 755 - 50 * i, 679);
-					}
-
-					else if (Note.getCollected() == 4) {
-						if (firstDragged) {
-							g2d.drawImage(noteSmall, r[0].x, r[0].y, null);
-							g2d.drawString(String.valueOf(num1), r[0].x + r[0].width / 2 - 3, r[0].y + r[0].height / 2 + 3);
+						else if (current.getNotesCollected() == 2) {
+							g2d.drawImage(noteSmall, 720 - 50 * i, 658, null);
+							g2d.drawString(String.valueOf(current.getNotesValues().get(i)), 730 - 50 * i, 679);
 						}
-						if (secondDragged) {
-							g2d.drawImage(noteSmall, r[1].x, r[1].y, null);
-							g2d.drawString(String.valueOf(num2), r[1].x + r[1].width / 2 - 3, r[1].y + r[1].height / 2 + 3);
+
+						else if (current.getNotesCollected() == 3) {
+							g2d.drawImage(noteSmall, 746 - 50 * i, 658, null);
+							g2d.drawString(String.valueOf(current.getNotesValues().get(i)), 755 - 50 * i, 679);
 						}
-						if (thirdDragged) {
-							g2d.drawImage(noteSmall, r[2].x, r[2].y, null);
-							g2d.drawString(String.valueOf(num3), r[2].x + r[2].width / 2 - 3, r[2].y + r[2].height / 2 + 3);
-						}
-						if (fourthDragged) {
-							g2d.drawImage(noteSmall, r[3].x, r[3].y, null);
-							g2d.drawString(String.valueOf(num4), r[3].x + r[3].width / 2 - 3, r[3].y + r[3].height / 2 + 3);
-						} 
+
+						else if (current.getNotesCollected() == 4) {
+							if (firstDragged) {
+								g2d.drawImage(noteSmall, r[0].x, r[0].y, null);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), r[0].x + r[0].width / 2 - 3, r[0].y + r[0].height / 2 + 3);
+							}
+							if (secondDragged) {
+								g2d.drawImage(noteSmall, r[1].x, r[1].y, null);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), r[1].x + r[1].width / 2 - 3, r[1].y + r[1].height / 2 + 3);
+							}
+							if (thirdDragged) {
+								g2d.drawImage(noteSmall, r[2].x, r[2].y, null);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), r[2].x + r[2].width / 2 - 3, r[2].y + r[2].height / 2 + 3);
+							}
+							if (fourthDragged) {
+								g2d.drawImage(noteSmall, r[3].x, r[3].y, null);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), r[3].x + r[3].width / 2 - 3, r[3].y + r[3].height / 2 + 3);
+							} 
 							g2d.drawImage(noteSmall, 770 - 50 * i, 658, null);
-							g2d.drawString(String.valueOf(Note.getNotes().get(i)), 780 - 50 * i, 679);
+							g2d.drawString(String.valueOf(current.getNotesValues().get(i)), 780 - 50 * i, 679);
+						}
 					}
 				}
 			}
 		}
 	}
 
+	public void update(Player p, Levels l){
+		numOfBullets = p.amountOfBullets();
+		current = l.getCurrent();
+	}
+
 	public void expandNotes() {
-		if (Note.getCollected() > 0) {
+		if (current.getNotesCollected() > 0) {
 			if (isExpanded)
 				isExpanded = false;
 			else
@@ -192,24 +206,32 @@ public class Inventory {
 			r[3].y = e.getY() - r[3].height/2;
 		}
 	}
-	
+
 	public Rectangle[] getRectangles() {
 		return r;
 	}
-	
+
 	public int getNum1() {
 		return num1;
 	}
-	
+
 	public int getNum2() {
 		return num2;
 	}
-	
+
 	public int getNum3() {
 		return num3;
 	}
-	
+
 	public int getNum4() {
 		return num4;
+	}
+
+	public BufferedImage getNoteImage(){
+		return note;
+	}
+
+	public void addLevels(Levels l) {
+		levels = l;
 	}
 }

@@ -1,5 +1,6 @@
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -12,7 +13,8 @@ public abstract class Level {
 	private Camera[] cameras = new Camera[5];
 	private Officer[] officers = new Officer[5];
 	private Vault vault;
-	
+	private ArrayList<Integer> notesValues = new ArrayList<Integer>();
+
 	private BufferedImage level;
 	private ArrayList<Rectangle> hits = new ArrayList<Rectangle>();
 	private Timer timer;
@@ -35,5 +37,16 @@ public abstract class Level {
 	public abstract boolean isHackingVault();
 
 	public abstract void mouseMoved(MouseEvent e);
+	public abstract void keyPressed(KeyEvent e, Player p);
+
+	public abstract int getTotalValue();
+
+	public abstract int getNotesCollected();
+
+	public abstract void addNotesCollected(int n);
+
+	public abstract ArrayList<Integer> getNotesValues();
+
+	public abstract void addNotesValues(int number);
 	
 }

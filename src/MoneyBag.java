@@ -22,7 +22,7 @@ public class MoneyBag {
 	private int height;
 	private boolean isCollected = false;
 	private boolean animated = false;
-	private static int totalValue = 0;
+	
 	private int counter = 0;
 	private CashOut game;
 
@@ -34,7 +34,6 @@ public class MoneyBag {
 		}
 		value = rand.nextInt(3 - 1 + 1) + 1; //between 1 and 10
 		value *= 50;
-		totalValue += value;
 		x = rand.nextInt(1100);
 		y = rand.nextInt(800);
 		width = bag.getWidth();
@@ -90,8 +89,8 @@ public class MoneyBag {
 		}).start();
 	}
 
-	public static int getTotalValue(){
-		return totalValue;
+	public int getValue(){
+		return value;
 	}
 	
 	public BufferedImage getImage(){

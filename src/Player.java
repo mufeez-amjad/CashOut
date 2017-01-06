@@ -98,11 +98,10 @@ public class Player {
 		// Drawing the rotated image at the required drawing locations
 		if(op!=null) g2d.drawImage(op.filter(currentImg, null), (int)x, (int)y, null);
 	    else g2d.drawImage(currentImg, (int)x, (int)y, null);
-	    g2d.setColor(Color.blue);
+	    //g2d.setColor(Color.blue);
 	    //g2d.fillOval((int)gunX, (int)gunY, 10, 10);
-	    
-	    g2d.fillOval((int) pointX, (int) pointY, 10, 10);
-	    g2d.fillOval((int) pointX2, (int) pointY2, 10, 10);
+	    //g2d.fillOval((int) pointX, (int) pointY, 10, 10);
+	    //g2d.fillOval((int) pointX2, (int) pointY2, 10, 10);
 	    }
 
 	public void update(){
@@ -226,18 +225,19 @@ public class Player {
 		}
 	}
 
-	public void setNB(int x, int y, double angle)//sets position and movement of bullet
+	public void setNB(int x, int y, double angle) //sets position and movement of bullet
 	{
 		if (nb.size() > 9)
 		{
 			nb.set(0, null);
-			nb.remove(nb.get(0));//removes the bullets from the game when tried to exceed 3
+			nb.remove(nb.get(0)); //removes the bullets from the game when tried to exceed 3
 		}
 		
-		if (nb.size() < 9)//only 3 shots allowed at a time
+		if (nb.size() < 9) //only 9 bullet allowed at a time
 		{
 			nb.add(new Bullet(x, y, angle));//adds bullets to list when a new one is shot
 			if (game.getSoundState()) playGunshot();
+			game.addSuspicion(250);
 		}
 	}
 	
@@ -290,11 +290,11 @@ public class Player {
 		System.out.println(angle);
 	}
 	
-	public Point getPoint(){
+	public Point getPoint(){ //front of player
 		return new Point((int) pointX, (int) pointY);
 	}
 	
-	public Point getPoint2(){
+	public Point getPoint2(){ //back of player
 		return new Point((int) pointX2, (int) pointY2);
 	}
 }

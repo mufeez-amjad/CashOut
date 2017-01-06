@@ -25,16 +25,16 @@ public class CashOut extends JPanel{
 	private Note note = new Note();
 
 	private Player player;
-	private Inventory inventory = new Inventory();
 
 	private Levels levels;
-	
-	private Level1 l;
+	private Inventory inventory;
+
+	private Level1 l = new Level1(this);
 
 	private Menu menu;
 
 	private BufferedImage suspicion;
-	private int suspicionLevel = 0;
+	private double suspicionLevel = 0;
 	//private MazePuzzle m1 = new MazePuzzle(45);
 	//private PicturePuzzle p1 = new PicturePuzzle(500, 500);
 	private int score = 0;
@@ -48,7 +48,7 @@ public class CashOut extends JPanel{
 	private Clip music;
 	private boolean playing = false;
 	private boolean paused = false;
-	
+
 	//private Level1 current;
 
 	protected boolean isMenu = true;
@@ -58,6 +58,8 @@ public class CashOut extends JPanel{
 	private boolean soundOn = true;
 
 	private boolean musicOn = true;
+
+	private boolean gameOver = false;
 
 	private static int frameHeight = 900;
 	private static int frameWidth = 1200;
@@ -71,7 +73,9 @@ public class CashOut extends JPanel{
 	}
 
 	public CashOut(){
+		inventory = new Inventory();
 		menu = new Menu(inventory, l, this);
+
 		try { 
 			font = Font.createFont(Font.TRUETYPE_FONT, new File("src/Fonts/CashCurrency.ttf")); 
 			fontHuge = font.deriveFont(Font.PLAIN, 50);
@@ -105,27 +109,27 @@ public class CashOut extends JPanel{
 					int x = player.getPoint().x;
 					int y = player.getPoint().y;
 					double angle = player.getAngle();
-					
+
 					int x2 = player.getPoint2().x;
 					int y2 = player.getPoint2().y;
 
 					if(e.getKeyCode()==KeyEvent.VK_UP){
 						x += 5 * Math.sin(Math.toRadians(angle));
 						y += -5 * Math.cos(Math.toRadians(angle));
-						
+
 						x2 += 5 * Math.sin(Math.toRadians(angle));
 						y2 += -5 * Math.cos(Math.toRadians(angle));
-						
+
 						if(!levels.getCurrent().hit(x, y)) player.move(0, -5);
 					} 
 
 					if(e.getKeyCode()==KeyEvent.VK_DOWN){
 						x += -5 * Math.sin(Math.toRadians(angle));
 						y += 5 * Math.cos(Math.toRadians(angle));
-						
+
 						x2 += 5 * Math.sin(Math.toRadians(angle));
 						y2 += -5 * Math.cos(Math.toRadians(angle));
-						
+
 						if(!levels.getCurrent().hit(x2, y2)) player.move(0, 5);
 					} 
 
@@ -149,7 +153,8 @@ public class CashOut extends JPanel{
 
 					if (e.getKeyCode() == KeyEvent.VK_X) 
 					{
-						player.printAngle();
+						levels.getCurrent().keyPressed(e, player);
+						suspicionLevel = 0;
 					}
 				}
 
@@ -185,7 +190,6 @@ public class CashOut extends JPanel{
 
 					if (e.getX() > 30 && e.getX() < 30 + menu.getSoundOn().getWidth() && e.getY() > 715 && e.getY() < 715 + menu.getSoundOn().getHeight()){
 						soundOn = !soundOn;
-
 					}
 				}
 			}
@@ -235,14 +239,14 @@ public class CashOut extends JPanel{
 		inventory.paint(g2d);
 
 		g2d.setColor(front);
-		g2d.fillRect(75, frameHeight - 160, 10 * (MoneyBag.getTotalValue()/10/2), 50); //score
+		g2d.fillRect(75, frameHeight - 160, 10 * (levels.getCurrent().getTotalValue()/10/2), 50); //score
 		g2d.fillRect(75, frameHeight - 215, 200, 50); //suspicion
 
 		Color color = Color.decode("0x065C27"); //score
 		Color trans = new Color(color.getRed(), color.getGreen(), color.getBlue(), 200);
 		g2d.setColor(trans);
 		g2d.fillRect(75, frameHeight - 160, score/2, 50); //score
-		g2d.setFont(fontBig);
+		g2d.setFont(fontHuge);
 		g2d.drawString("$", 30, frameHeight - 115);
 		g2d.setColor(Color.white);
 		g2d.setFont(fontMedium);
@@ -250,9 +254,12 @@ public class CashOut extends JPanel{
 
 		g2d.drawImage(suspicion, 15, frameHeight - 215, null); //suspicion
 		g2d.setColor(Color.YELLOW);
-		g2d.fillRect(75, frameHeight - 215, suspicionLevel/10, 50);	
+		g2d.fillRect(75, frameHeight - 215, (int) suspicionLevel/10, 50);	
 
-		if (!playing) menu.paint(g2d);
+		if (!playing){
+			menu.paint(g2d);
+		}
+
 		if (playing){
 			Color fade = new Color(0, 0, 0, fadeIn);
 			if (fadeIn > 0) fadeIn -= 3;
@@ -271,7 +278,6 @@ public class CashOut extends JPanel{
 			if (settingsExpanded) g2d.fillRoundRect(20, 700, menu.getSettingsMenu().getWidth(), 150, 25, 25);
 			g2d.drawImage(menu.getSettingsMenu(), 20, 800, null);
 			if (settingsExpanded){
-
 				if (soundOn) g2d.drawImage(menu.getSoundOn(), 30, 715, null);
 				else g2d.drawImage(menu.getSoundOff(), 30, 715, null);
 				if (musicOn) g2d.drawImage(menu.getMusicOn(), 33, 760, null);
@@ -290,8 +296,9 @@ public class CashOut extends JPanel{
 			//m1.update();
 
 			levels.update(player, this);
+			inventory.update(player, levels);
 
-			inventory.update(player);
+			if (suspicionLevel > 0) suspicionLevel-= 0.25;
 		}
 	}
 
@@ -301,7 +308,10 @@ public class CashOut extends JPanel{
 
 	public void addSuspicion(int n){
 		if (suspicionLevel < 2000) suspicionLevel += n;
-		else System.out.println("GAME OVER");
+		else{
+			gameOver = true;
+			playing = false;
+		}
 	}
 
 	public void setDifficulty(int n){
@@ -365,6 +375,10 @@ public class CashOut extends JPanel{
 		}
 	}
 
+	public static Font getFontHuge(){
+		return fontHuge;
+	}
+
 	public static Font getFontBig(){
 		return fontBig;
 	}
@@ -381,7 +395,7 @@ public class CashOut extends JPanel{
 		return fontTiny;
 	}
 
-	public Boolean getSoundState(){
+	public boolean getSoundState(){
 		return soundOn;
 	}
 
@@ -393,5 +407,18 @@ public class CashOut extends JPanel{
 	public void setSound(boolean state) {
 		this.soundOn = state;
 	}
+
+	public int getScore(){
+		return score;
+	}
+
+	public boolean getGameOver(){
+		return gameOver;
+	}
+
+	public Levels getLevels(){
+		return levels;
+	}
+
 
 }

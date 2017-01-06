@@ -55,12 +55,12 @@ public class Menu {
 	private BufferedImage currentImg;
 	private int frame;
 	private boolean information = false;
-	private boolean play = true;
+	private boolean play = false;
 	private boolean scores = false;
-	private boolean main = false;
+	private boolean main = true;
 	private boolean reversed;
-	private static boolean musicOn = true;
-	private static boolean soundOn = true;
+	private boolean musicOn = true;
+	private boolean soundOn = true;
 
 	private Level1 level;
 
@@ -69,7 +69,7 @@ public class Menu {
 	private boolean car1Stopped = false;
 	private boolean car2Stopped = false;
 	private boolean playedScreech = false;
-	private boolean taxiStopped = true;
+	private boolean taxiStopped = false;
 	private int fadeOut;
 	private CashOut game;
 	private boolean taxiGone = false;
@@ -77,6 +77,7 @@ public class Menu {
 
 	private Levels gameLevels;
 	private Level[] levels;
+	private boolean gameOver = false;
 
 
 	public boolean isMenuExit() {
@@ -321,7 +322,7 @@ public class Menu {
 				g2d.drawImage(controls, (CashOut.getFrameWidth()/2) - (controls.getWidth()/2), 465, null);
 				int x = 275;
 				int y = 700;
-				g2d.drawImage(inv.getNoteImg(), x, y, null);
+				g2d.drawImage(inv.getNoteImage(), x, y, null);
 				g2d.drawImage(level.getBagImage(), x + 70, y + 10, null);
 
 				g2d.setFont(CashOut.getFontSmall());
@@ -350,41 +351,6 @@ public class Menu {
 				if (taxiStopped){
 					g2d.setColor(grey);
 					g2d.fillRoundRect(50, 50, 1100, 800, 25, 25);
-
-					//old
-
-					/*
-					g2d.setFont(CashOut.getFontBig());
-					g2d.setColor(Color.WHITE);
-					FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
-					int stringLength = fontMetrics.stringWidth("Pick a Difficulty");
-					g2d.drawString("Pick a Difficulty", (CashOut.getFrameWidth()/2) - (stringLength/2), 125);
-					g2d.setColor(greyTrans);
-					g2d.fillRoundRect(85, 175, 1025, 200, 25, 25); 
-					g2d.fillRoundRect(85, 400, 1025, 200, 25, 25);
-					g2d.fillRoundRect(85, 625, 1025, 200, 25, 25);
-
-					g2d.setFont(CashOut.getFontBig());
-					g2d.setColor(Color.white);
-					g2d.drawString("Easy", 100, 220);
-					g2d.drawString("Medium", 100, 445);
-					g2d.drawString("Hard", 100, 670);
-					g2d.setFont(CashOut.getFontMedium());
-
-					g2d.drawString("3 Levels", 150, 270);
-					g2d.drawString("Money Bags and Notes", 150, 310);
-					g2d.drawString("Vaults", 150, 350);
-					g2d.drawImage(one, 85 + 1025 - one.getWidth() - 150, 210, null);
-
-					g2d.drawString("4 Levels" , 150, 495);
-					g2d.drawString("Lasers and Cameras", 150, 535);
-					g2d.drawString("Timer", 150, 575);
-					g2d.drawImage(two, 85 + 1025 - two.getWidth() - 150, 435, null);					
-
-					g2d.drawString("5 Levels" , 150, 720);
-					g2d.drawString("Officers", 150, 760);
-					g2d.drawImage(three, 85 + 1025 - three.getWidth() - 150, 660, null);
-					 */
 					//new
 					g2d.setFont(CashOut.getFontBig());
 					g2d.setColor(Color.WHITE);
@@ -400,10 +366,36 @@ public class Menu {
 						g2d.setColor(Color.WHITE);
 						g2d.drawString(String.valueOf(i+1), -5 + ((i+1)*200) , 275);
 					}
+					
+					g2d.setFont(CashOut.getFontHuge());
+					fontMetrics = g2d.getFontMetrics(CashOut.getFontHuge()); 
+					stringLength = fontMetrics.stringWidth("More levels coming soon!");
+					g2d.drawString("More levels coming soon!", (CashOut.getFrameWidth()/2) - (stringLength/2), 550);
 				}
 			}
+			
+			if (gameOver){
+				g2d.setColor(grey);
+				g2d.fillRoundRect(50, 50, 1100, 800, 25, 25);
+				
+				g2d.setFont(CashOut.getFontHuge());
+				g2d.setColor(Color.decode("0x990000")); //crimson
 
-			if ((taxiStopped && !taxiGone) || information || scores) g2d.drawImage(back, 10, 700, null);
+				FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontHuge()); 
+				int stringLength = fontMetrics.stringWidth("GAME OVER");
+				g2d.drawString("GAME OVER", (CashOut.getFrameWidth()/2) - (stringLength/2), 375);
+				g2d.setFont(CashOut.getFontBig());
+				fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
+				stringLength = fontMetrics.stringWidth("Your Score");
+				g2d.drawString("Your Score", (CashOut.getFrameWidth()/2) - (stringLength/2), 470);
+				g2d.setColor(Color.white);
+				g2d.setFont(CashOut.getFontMedium());
+				fontMetrics = g2d.getFontMetrics(CashOut.getFontMedium()); 
+				stringLength = fontMetrics.stringWidth(String.valueOf(game.getScore()));
+				g2d.drawString(String.valueOf(game.getScore()), (CashOut.getFrameWidth()/2) - (stringLength/2), 530);
+			}
+
+			if ((taxiStopped && !taxiGone) || information || scores || gameOver) g2d.drawImage(back, 10, 700, null);
 
 		}
 		if (taxiGone){
@@ -420,6 +412,7 @@ public class Menu {
 	}
 
 	public void update(){
+		gameOver = game.getGameOver();
 		if (cloudCounter > 1200*2) cloudCounter = 0;
 		else cloudCounter += 0.5;
 		/*if (settingsExpanded && settingsCounter < 150){
@@ -505,12 +498,12 @@ public class Menu {
 			if (e.getX() > 30 && e.getX() < 30 + music.getWidth() && e.getY() > 760 && e.getY() < 760 + music.getHeight()){
 				musicOn = !musicOn;
 				game.setMusic(musicOn);
-				//game.stopStartMusic();
 			}
 
 			if (e.getX() > 30 && e.getX() < 30 + soundfx.getWidth() && e.getY() > 715 && e.getY() < 715 + soundfx.getHeight()){
 				soundOn = !soundOn;
 				game.setSound(soundOn);
+				System.out.println("SOUND OFF");
 				stopStartSound();
 			}
 
@@ -530,23 +523,6 @@ public class Menu {
 
 
 		if (play && taxiStopped){
-			/*if (e.getX() > 85 && e.getX() < 85 + 1025){
-				if (e.getY() > 175 && e.getY() < 175 + 200){
-					c.setDifficulty(1);
-					levelSelected = true;
-				}
-
-				if (e.getY() > 400 && e.getY() < 400 + 200){
-					c.setDifficulty(2);
-					levelSelected = true;
-				}
-
-				if (e.getY() > 625 && e.getY() < 625 + 200){
-					c.setDifficulty(3);
-					levelSelected = true;
-				}
-
-			}*/
 			if (e.getY() > 175 && e.getY() < 175 + levelBag.getHeight()){
 				if (e.getX() > 155 && e.getX() < 155 + levelBag.getWidth()){
 					gameLevels.setCurrent(0);
@@ -612,6 +588,13 @@ public class Menu {
 				main = true;
 
 			}
+			
+			if (gameOver){
+				gameOver = false;
+				menuCounter = 500;
+				reversed = true;
+				main = true;
+			}
 		}
 	}
 
@@ -634,6 +617,7 @@ public class Menu {
 				}
 			}
 		}).start();
+		System.out.println("Start Traffic");
 	}
 
 	public synchronized void playTires() { //plays the pop sound effect
@@ -666,6 +650,8 @@ public class Menu {
 		if (soundOn){
 			startTraffic();
 		}
+		
+		System.out.println("Stop Start Sound");
 	}
 
 	public BufferedImage getSettingsMenu(){
@@ -692,6 +678,7 @@ public class Menu {
 		gameLevels = l;
 		levels = gameLevels.getLevels();
 	}
+	
 
 }
 

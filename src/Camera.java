@@ -31,21 +31,21 @@ public class Camera {
 	private Point p3;
 	private int[] xArray;
 	private int[] yArray;
+	private CashOut game;
 
-	public Camera(int x, int y, Point p1, Point p2, Point p3) {
+	public Camera(Point p1, Point p2, Point p3, CashOut c) {
 		try {
-			img = ImageIO.read(getClass().getResource("Camera.png"));
+			img = ImageIO.read(getClass().getResource("/Images/Camera.png"));
 
 		} catch (IOException e) {
 			System.out.println("NO IMAGE");
 		}
-		this.x = x;
-		this.y = y;
 		this.p1 = p1;
 		this.p2 = p2;
 		this.p3 = p3;
 		angle = 0;
 		up = true;
+		game = c;
 	}
 
 	/*
@@ -61,12 +61,8 @@ public class Camera {
 		beam = new Polygon(xArray, yArray, 3);
 	}
 
-	public static DoublePoint rotatePoint(double x, double y, double cx, double cy, double a) {
-		return new DoublePoint(cx + ((x - cx) * Math.cos(a) - (y - cy) * Math.sin(a)),
-				cy + ((x - cx) * Math.sin(a) + (y - cy) * Math.cos(a)));
-	}
-
 	public void paint(Graphics2D g2d) {
+		update();
 		Color color = new Color(204, 204, 0, 60);
 		if (up) {
 			angle += 0.2;
@@ -82,17 +78,22 @@ public class Camera {
 		g2d.rotate(-Math.toRadians(angle), p1.x, p1.y);
 	}
 
-	public void testTouch(int mouseX, int mouseY) {
+	public void detect(Point p1, Point p2) {
+		int x1 = p1.x;
+		int y1 = p1.y;
+		
+		int x2 = p2.x;
+		int y2 = p2.y;
 		AffineTransform transform = AffineTransform.getRotateInstance(Math.toRadians(angle), p1.x, p1.y);
 		Shape rotatedBeam = transform.createTransformedShape(beam);
-		if (rotatedBeam.contains(mouseX, mouseY)) {
-			System.out.println("INSIDE");
+		if (rotatedBeam.contains(x1, y1)) { //  || rotatedBeam.contains(x2, y2)
+			game.addSuspicion(50);
 		} else {
-			System.out.println("OUTSIDE");
+			//System.out.println("OUTSIDE");
 		}
 	}
 
-	public BufferedImage getImg() {
+	public BufferedImage getImage() {
 		return img;
 	}
 

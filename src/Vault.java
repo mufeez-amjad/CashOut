@@ -35,7 +35,7 @@ public class Vault {
 
 	public Vault(int x, int y, int width, int height) {
 		try {
-			clockFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/digital.ttf"));
+			clockFont = Font.createFont(Font.TRUETYPE_FONT, new File("/Fonts/digital.ttf"));
 			clockFont = clockFont.deriveFont(100F);
 			vault = ImageIO.read(getClass().getResource("/vault.png"));
 		} catch (FontFormatException e) {
