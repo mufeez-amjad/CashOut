@@ -37,6 +37,7 @@ public abstract class Level {
 	public abstract boolean isHackingVault();
 
 	public abstract void mouseMoved(MouseEvent e);
+	public abstract void mouseClicked(MouseEvent e);
 	public abstract void keyPressed(KeyEvent e, Player p);
 
 	public abstract int getTotalValue();

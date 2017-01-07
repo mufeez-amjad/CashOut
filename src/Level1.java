@@ -16,14 +16,12 @@ public class Level1 extends Level{
 	private Officer[] officers = new Officer[2];
 	private Laser laser;
 	private Camera camera;
+	private VaultBody vaultBody;
 	private ArrayList<Rectangle> hits = new ArrayList<Rectangle>();
 	private Timer timer;
 	private boolean isFinished = false;
 	private boolean isUnlocked = true;
 	private boolean hackingLaser = true;
-	private int totalValue = 0;
-	private int notesCollected = 0;
-	private ArrayList<Integer> notesValues = new ArrayList<Integer>();
 
 	public Level1(CashOut c){
 		try { 
@@ -38,7 +36,6 @@ public class Level1 extends Level{
 
 		for (int i = 0; i < money.length; i++){
 			money[i] = new MoneyBag(c);
-			totalValue += money[i].getValue();
 		}
 		
 		laser = new Laser(700, 52, 90, 30);
@@ -47,8 +44,11 @@ public class Level1 extends Level{
 			officers[i] = new Officer();
 		}
 		
-		camera = new Camera (new Point(1100, 50), new Point(800, 200), new Point(1150, 200), c);
-
+		camera = new Camera (
+				new Point(1087, 57), 
+				new Point(1060, 169), 
+				new Point(980, 121), 32.0, -12.0, 1087, 57, 7);
+		vaultBody = new VaultBody(960, 836);
 		hits.add(new Rectangle(756, 0, 444, 50));
 		hits.add(new Rectangle(756, 167, 87, 66));
 		hits.add(new Rectangle(843, 167, 110, 733));
@@ -77,11 +77,12 @@ public class Level1 extends Level{
 		g2d.fillRect(843, 167, 110, 733);
 		g2d.fillRect(1090, 167, 105, 733);
 		 */
-
+		vaultBody.paint(g2d);
 		timer.paint(g2d);
 	}
 
 	public void update(Player p, CashOut c){
+		camera.update(p, c);
 		for (int i = 0; i < notes.length; i++){
 			notes[i].collect(p, this);
 		}
@@ -94,7 +95,6 @@ public class Level1 extends Level{
 		for (int i = 0; i < officers.length; i++){
 			officers[i].update(p, c, p.getNB());
 		}
-		//camera.detect(p.getPoint(), p.getPoint2());
 	}
 
 
@@ -108,7 +108,7 @@ public class Level1 extends Level{
 	}
 
 	public BufferedImage getCameraImage(){
-		return camera.getImage();
+		return camera.getImg();
 	}
 
 	public BufferedImage getOfficerImage(){
@@ -154,36 +154,50 @@ public class Level1 extends Level{
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		camera.mouseClicked(e);
+	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		laser.mouseMoved(e);
-		
 	}
 	
 	public void keyPressed(KeyEvent e, Player p) {
 		laser.keyPressed(e, p);
+		camera.keyPressed(e, p);
 	}
 
 	@Override
 	public int getTotalValue() {
-		return totalValue;
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
+	@Override
 	public int getNotesCollected() {
-		return notesCollected;
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
+	@Override
 	public void addNotesCollected(int n) {
-		notesCollected += n;
+		// TODO Auto-generated method stub
+		
 	}
 
+	@Override
 	public ArrayList<Integer> getNotesValues() {
-		return notesValues;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public void addNotesValues(int n) {
-		notesValues.add(n);
+	@Override
+	public void addNotesValues(int number) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

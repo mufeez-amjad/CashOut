@@ -23,12 +23,11 @@ import javax.swing.*;
 
 public class CashOut extends JPanel{
 	private Note note = new Note();
-
 	private Player player;
+	private Inventory inventory = new Inventory();
 
 	private Levels levels;
-	private Inventory inventory;
-
+	
 	private Level1 l = new Level1(this);
 
 	private Menu menu;
@@ -48,7 +47,7 @@ public class CashOut extends JPanel{
 	private Clip music;
 	private boolean playing = false;
 	private boolean paused = false;
-
+	
 	//private Level1 current;
 
 	protected boolean isMenu = true;
@@ -73,9 +72,7 @@ public class CashOut extends JPanel{
 	}
 
 	public CashOut(){
-		inventory = new Inventory();
 		menu = new Menu(inventory, l, this);
-
 		try { 
 			font = Font.createFont(Font.TRUETYPE_FONT, new File("src/Fonts/CashCurrency.ttf")); 
 			fontHuge = font.deriveFont(Font.PLAIN, 50);
@@ -109,27 +106,27 @@ public class CashOut extends JPanel{
 					int x = player.getPoint().x;
 					int y = player.getPoint().y;
 					double angle = player.getAngle();
-
+					
 					int x2 = player.getPoint2().x;
 					int y2 = player.getPoint2().y;
 
 					if(e.getKeyCode()==KeyEvent.VK_UP){
 						x += 5 * Math.sin(Math.toRadians(angle));
 						y += -5 * Math.cos(Math.toRadians(angle));
-
+						
 						x2 += 5 * Math.sin(Math.toRadians(angle));
 						y2 += -5 * Math.cos(Math.toRadians(angle));
-
+						
 						if(!levels.getCurrent().hit(x, y)) player.move(0, -5);
 					} 
 
 					if(e.getKeyCode()==KeyEvent.VK_DOWN){
 						x += -5 * Math.sin(Math.toRadians(angle));
 						y += 5 * Math.cos(Math.toRadians(angle));
-
+						
 						x2 += 5 * Math.sin(Math.toRadians(angle));
 						y2 += -5 * Math.cos(Math.toRadians(angle));
-
+						
 						if(!levels.getCurrent().hit(x2, y2)) player.move(0, 5);
 					} 
 
@@ -154,7 +151,6 @@ public class CashOut extends JPanel{
 					if (e.getKeyCode() == KeyEvent.VK_X) 
 					{
 						levels.getCurrent().keyPressed(e, player);
-						suspicionLevel = 0;
 					}
 				}
 
@@ -190,7 +186,12 @@ public class CashOut extends JPanel{
 
 					if (e.getX() > 30 && e.getX() < 30 + menu.getSoundOn().getWidth() && e.getY() > 715 && e.getY() < 715 + menu.getSoundOn().getHeight()){
 						soundOn = !soundOn;
+
 					}
+				}
+				
+				if (playing && !paused) {
+					levels.getCurrent().mouseClicked(e);
 				}
 			}
 
@@ -216,6 +217,11 @@ public class CashOut extends JPanel{
 		addMouseMotionListener(new MouseAdapter() {
 			public void mouseMoved(MouseEvent e) {
 				if (levels.mazePuzzle()) levels.getCurrent().mouseMoved(e);
+				/*
+				System.out.println("Mouse X: " + e.getX());
+				System.out.println("Mouse Y: " + e.getY());
+				System.out.println("-------------------------------");
+				*/
 			}
 			public void mouseDragged(MouseEvent e){ }
 		});
@@ -232,14 +238,12 @@ public class CashOut extends JPanel{
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		Color front = new Color(88, 89, 91, 127);
 		Color back = new Color(88, 89, 91, 75);
-
 		levels.paint(g2d);
-
 		player.paint(g2d);		
 		inventory.paint(g2d);
 
 		g2d.setColor(front);
-		g2d.fillRect(75, frameHeight - 160, 10 * (levels.getCurrent().getTotalValue()/10/2), 50); //score
+		g2d.fillRect(75, frameHeight - 160, 10 * (MoneyBag.getValue()/10/2), 50); //score
 		g2d.fillRect(75, frameHeight - 215, 200, 50); //suspicion
 
 		Color color = Color.decode("0x065C27"); //score
@@ -259,7 +263,7 @@ public class CashOut extends JPanel{
 		if (!playing){
 			menu.paint(g2d);
 		}
-
+		
 		if (playing){
 			Color fade = new Color(0, 0, 0, fadeIn);
 			if (fadeIn > 0) fadeIn -= 3;
@@ -278,6 +282,7 @@ public class CashOut extends JPanel{
 			if (settingsExpanded) g2d.fillRoundRect(20, 700, menu.getSettingsMenu().getWidth(), 150, 25, 25);
 			g2d.drawImage(menu.getSettingsMenu(), 20, 800, null);
 			if (settingsExpanded){
+
 				if (soundOn) g2d.drawImage(menu.getSoundOn(), 30, 715, null);
 				else g2d.drawImage(menu.getSoundOff(), 30, 715, null);
 				if (musicOn) g2d.drawImage(menu.getMusicOn(), 33, 760, null);
@@ -293,11 +298,7 @@ public class CashOut extends JPanel{
 		else if (!paused){
 			if (!levels.getCurrent().getTimer().isRunning()) levels.getCurrent().getTimer().stopStart();
 			player.update();
-			//m1.update();
-
 			levels.update(player, this);
-			inventory.update(player, levels);
-
 			if (suspicionLevel > 0) suspicionLevel-= 0.25;
 		}
 	}
@@ -378,7 +379,7 @@ public class CashOut extends JPanel{
 	public static Font getFontHuge(){
 		return fontHuge;
 	}
-
+	
 	public static Font getFontBig(){
 		return fontBig;
 	}
@@ -395,7 +396,7 @@ public class CashOut extends JPanel{
 		return fontTiny;
 	}
 
-	public boolean getSoundState(){
+	public Boolean getSoundState(){
 		return soundOn;
 	}
 
@@ -407,18 +408,15 @@ public class CashOut extends JPanel{
 	public void setSound(boolean state) {
 		this.soundOn = state;
 	}
-
+	
 	public int getScore(){
 		return score;
 	}
-
+	
 	public boolean getGameOver(){
 		return gameOver;
 	}
-
-	public Levels getLevels(){
-		return levels;
-	}
-
+	
+	
 
 }

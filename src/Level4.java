@@ -118,4 +118,10 @@ public class Level4 extends Level {
 		
 	}
 
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

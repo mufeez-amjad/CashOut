@@ -64,8 +64,6 @@ public class Laser {
 				c.addSuspicion(250);
 			}
 		}
-
-
 		if (!m.isFinished() && hacking) m.update();
 		if (m.isLose() || m.isWin()) rectCounter++;
 	}

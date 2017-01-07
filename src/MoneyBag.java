@@ -14,7 +14,7 @@ import javax.sound.sampled.Clip;
 public class MoneyBag {
 
 	private BufferedImage bag;
-	private int value;
+	private static int value;
 	Random rand = new Random();
 	private int x;
 	private int y;
@@ -89,7 +89,7 @@ public class MoneyBag {
 		}).start();
 	}
 
-	public int getValue(){
+	public static int getValue(){
 		return value;
 	}
 	

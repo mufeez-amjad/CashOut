@@ -156,6 +156,5 @@ public class MazePuzzle {
 		lose = false;
 		inMaze = false;
 		ready = false;
-		
 	}
 }

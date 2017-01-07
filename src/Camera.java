@@ -18,92 +18,141 @@ import javax.imageio.ImageIO;
 public class Camera {
 
 	private BufferedImage img;
-	private int x;
-	private int y;
-	private boolean moving = false;
 	private double angle;
 	private boolean up;
-	private Graphics2D graphicsTemp;
-	private AffineTransform at;
 	private Polygon beam;
 	private Point p1;
 	private Point p2;
 	private Point p3;
 	private int[] xArray;
 	private int[] yArray;
-	private CashOut game;
+	private double maxAngle;
+	private double maxCounterAngle;
+	private int circleX;
+	private int circleY;
+	private int circleRadius;
+	private boolean disabled = false;
+	private PicturePuzzle pp;
+	private boolean hacking = false;
+	private int rectCounter = 0;
+	private boolean finished = false;
 
-	public Camera(Point p1, Point p2, Point p3, CashOut c) {
+	public Camera(Point p1, Point p2, Point p3, double maxAngle, double maxCounterAngle, int circleX, int circleY,
+			int circleRadius) {
 		try {
-			img = ImageIO.read(getClass().getResource("/Images/Camera.png"));
-
+			img = ImageIO.read(getClass().getResource("/Images/cameraHolder.png"));
 		} catch (IOException e) {
 			System.out.println("NO IMAGE");
 		}
+		this.circleRadius = circleRadius;
+		this.maxAngle = maxAngle;
+		this.maxCounterAngle = maxCounterAngle;
 		this.p1 = p1;
 		this.p2 = p2;
 		this.p3 = p3;
-		angle = 0;
+		this.circleX = circleX - circleRadius;
+		this.circleY = circleY - circleRadius;
+		angle = 0.1;
 		up = true;
-		game = c;
+		xArray = new int[] { p1.x, p2.x, p3.x };
+		yArray = new int[] { p1.y, p2.y, p3.y };
+		beam = new Polygon(xArray, yArray, 3);
+		pp = new PicturePuzzle(400, 200);
 	}
 
-	/*
-	 * public void clicked(MouseEvent e) { if (e.getX() > x && e.getY() > y &&
-	 * e.getX() < img.getWidth() + x && e.getY() < y + img.getHeight() &&
-	 * !isTransparent(e.getX(), e.getY())) { System.out.println("CLICKED"); }
-	 * else { System.out.println("NOT CLICKED"); } }
-	 */
-
-	public void update() {
+	public void update(Player p, CashOut c) {
+		AffineTransform transform = AffineTransform.getRotateInstance(Math.toRadians(angle), p1.x, p1.y);
+		Shape rotatedBeam = transform.createTransformedShape(beam);
+		if (rotatedBeam.contains(p.getX() + p.getWidth(), p.getY() + p.getHeight() / 2) && !disabled) {
+			c.addSuspicion(250);
+		}
+		if (pp.complete() || pp.failed()) {
+			rectCounter++;
+			if (rectCounter == 99) {
+				finished = true;
+			}
+		}
+		
+		if (pp.complete() && finished) {
+			disabled = true;
+		}
+		if (pp.failed() && finished) {
+			resetPuzzle();
+			c.addSuspicion(250);
+		}
+		
 		xArray = new int[] { p1.x, p2.x, p3.x };
 		yArray = new int[] { p1.y, p2.y, p3.y };
 		beam = new Polygon(xArray, yArray, 3);
 	}
 
+	public void resetPuzzle() {
+		pp = new PicturePuzzle(400, 200);
+		hacking = false;
+		finished = false;
+		disabled = false;
+		rectCounter = 0;
+	}
+
 	public void paint(Graphics2D g2d) {
-		update();
-		Color color = new Color(204, 204, 0, 60);
+		int alpha = 127;
+		Color redTrans = new Color(255, 0, 0, alpha);
+		Color greenTrans = new Color(0, 255, 0, alpha);
 		if (up) {
 			angle += 0.2;
 		} else {
 			angle -= 0.2;
 		}
-		if (angle >= 90.0 || angle <= 0.0) {
+		if (rectCounter > 0 && rectCounter < 100) {
+
+			if (pp.complete()) {
+				g2d.setColor(greenTrans);
+				g2d.fillRect(0, 0, CashOut.getFrameWidth(), CashOut.getFrameHeight());
+			}
+			if (pp.failed()) {
+				g2d.setColor(redTrans);
+				g2d.fillRect(0, 0, CashOut.getFrameWidth(), CashOut.getFrameHeight());
+			}
+			
+		}
+		if (angle >= maxAngle || angle <= maxCounterAngle) {
 			up = !up;
 		}
-		g2d.rotate(Math.toRadians(angle), p1.x, p1.y);
-		g2d.setColor(Color.YELLOW);
-		g2d.fillPolygon(beam);
-		g2d.rotate(-Math.toRadians(angle), p1.x, p1.y);
-	}
+		if (!disabled) {
+			g2d.rotate(Math.toRadians(angle), p1.x, p1.y);
+			g2d.setColor(Color.YELLOW);
+			g2d.fillPolygon(beam);
+			g2d.rotate(-Math.toRadians(angle), p1.x, p1.y);
+			g2d.setColor(Color.BLACK);
+			g2d.fillOval(circleX, circleY, 2 * circleRadius, 2 * circleRadius);
+		}
 
-	public void detect(Point p1, Point p2) {
-		int x1 = p1.x;
-		int y1 = p1.y;
-		
-		int x2 = p2.x;
-		int y2 = p2.y;
-		AffineTransform transform = AffineTransform.getRotateInstance(Math.toRadians(angle), p1.x, p1.y);
-		Shape rotatedBeam = transform.createTransformedShape(beam);
-		if (rotatedBeam.contains(x1, y1)) { //  || rotatedBeam.contains(x2, y2)
-			game.addSuspicion(50);
-		} else {
-			//System.out.println("OUTSIDE");
+		if (hacking && !pp.complete() && !pp.failed() && !finished) {
+			pp.paint(g2d);
 		}
 	}
 
-	public BufferedImage getImage() {
+	public BufferedImage getImg() {
 		return img;
 	}
 
-	/*
-	 * public boolean isTransparent(int x, int y) { //BufferedImage tempImg =
-	 * new BufferedImage(graphicsTemp.get) int pixel = img.getRGB(x - this.x, y
-	 * - this.y); if ((pixel >> 24) == 0x00) { System.out.println("ALPHA");
-	 * return true; } else { System.out.println("NONALPHA"); }
-	 * 
-	 * return false; }
-	 */
+	public void keyPressed(KeyEvent e, Player p) {
+		int x1 = p.getPoint().x;
+		int y1 = p.getPoint().y;
 
+		int x2 = p.getPoint2().x;
+		int y2 = p.getPoint2().y;
+		if (!disabled) {
+			if ((x1 > p1.x - 300 && x1 < p1.x && y1 > p1.y && y1 < p1.y + 300)
+					|| (x2 > p1.x - 300 && x2 < p1.x && y2 > p1.y && y2 < p1.y + 300)) {
+				if (e.getKeyCode() == KeyEvent.VK_X) {
+					hacking = true;
+				}
+			}
+		}
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		pp.clicked(e);
+	}
 }
