@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class MoneyBag {
 	private int counter = 0;
 	private CashOut game;
 
-	public MoneyBag(CashOut c){
+	public MoneyBag(CashOut c, ArrayList<Rectangle> hits){
 		try { 
 			bag = ImageIO.read(getClass().getResource("/Images/MoneyBag.png"));
 		} catch (IOException e) { 
@@ -36,6 +37,16 @@ public class MoneyBag {
 		value *= 50;
 		x = rand.nextInt(1100);
 		y = rand.nextInt(800);
+		
+		for (int i = 0; i < hits.size(); i++){
+			if (x > hits.get(i).getX() && x < hits.get(i).getX() + hits.get(i).getWidth() && y > hits.get(i).getY() && y < hits.get(i).getY() + hits.get(i).getHeight()){
+				x = rand.nextInt(1100);
+				y = rand.nextInt(800);
+				i = 0;
+				System.out.println("respawn");
+			}
+		}
+		
 		width = bag.getWidth();
 		height = bag.getHeight();
 		game = c;

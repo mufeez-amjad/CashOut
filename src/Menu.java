@@ -78,6 +78,7 @@ public class Menu {
 	private Levels gameLevels;
 	private Level[] levels;
 	private boolean gameOver = false;
+	private BufferedImage camera;
 
 
 	public boolean isMenuExit() {
@@ -94,17 +95,22 @@ public class Menu {
 			System.err.println("GAStudios.png could not be found");
 		}
 
+		try { 
+			camera = ImageIO.read(getClass().getResource("/Images/beam.png"));
+		} catch (IOException e) { 
+			System.err.println("beam.png could not be found");
+		}
 
 		try { 
 			levelBag = ImageIO.read(getClass().getResource("/Images/Level.png"));
 		} catch (IOException e) { 
-			System.err.println("GAStudios.png could not be found");
+			System.err.println("Level.png could not be found");
 		}
 
 		try { 
 			levelBagGray = ImageIO.read(getClass().getResource("/Images/LevelGray.png"));
 		} catch (IOException e) { 
-			System.err.println("GAStudios.png could not be found");
+			System.err.println("LevelGray.png could not be found");
 		}
 
 		try { 
@@ -329,8 +335,8 @@ public class Menu {
 				g2d.drawString("Collect", x + 30, y + 75);
 
 				g2d.setColor(Color.gray);
-				Image camera = level.getCameraImage().getScaledInstance(30, 26, Image.SCALE_DEFAULT);
-				g2d.drawImage(camera, x + 250, y + 20, null);
+				Image cameraSmall = camera.getScaledInstance(30, 26, Image.SCALE_DEFAULT);
+				g2d.drawImage(cameraSmall, x + 250, y + 20, null);
 				g2d.fillOval(x + 250 + 25, y + 20 - 5, 10, 10);
 				g2d.setColor(Color.white);
 				Image laser = level.getLaserImage().getScaledInstance(30, 7, Image.SCALE_DEFAULT);
@@ -398,7 +404,7 @@ public class Menu {
 			if ((taxiStopped && !taxiGone) || information || scores || gameOver) g2d.drawImage(back, 10, 700, null);
 
 		}
-		if (taxiGone){
+		if (taxiGone && !gameOver){
 			Color color = new Color(0, 0, 0, fadeOut);
 			if (fadeOut < 255) fadeOut += 3;
 			g2d.setColor(color);

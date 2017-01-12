@@ -1,4 +1,5 @@
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -19,7 +20,7 @@ public class Officer {
 	private boolean dead = false;
 	private BufferedImage blood;
 
-	public Officer(){
+	public Officer(ArrayList<Rectangle> hits){
 		try { 
 			officer = ImageIO.read(getClass().getResource("/Images/Officer.png"));
 		} catch (IOException e) { 
@@ -41,6 +42,15 @@ public class Officer {
 
 		x = rand.nextInt(1100);
 		y = rand.nextInt(800);
+		
+		for (int i = 0; i < hits.size(); i++){
+			if (x > hits.get(i).getX() && x < hits.get(i).getX() + hits.get(i).getWidth() && y > hits.get(i).getY() && y < hits.get(i).getY() + hits.get(i).getHeight()){
+				x = rand.nextInt(1100);
+				y = rand.nextInt(800);
+				i = 0;
+				System.out.println("respawn");
+			}
+		}
 	}
 
 	public void paint(Graphics2D g2d){

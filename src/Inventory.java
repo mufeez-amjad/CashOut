@@ -147,19 +147,19 @@ public class Inventory {
 						else if (current.getNotesCollected() == 4) {
 							if (firstDragged) {
 								g2d.drawImage(noteSmall, r[0].x, r[0].y, null);
-								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), r[0].x + r[0].width / 2 - 3, r[0].y + r[0].height / 2 + 3);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(3)), r[0].x + r[0].width / 2 - 3, r[0].y + r[0].height / 2 + 3);
 							}
 							if (secondDragged) {
 								g2d.drawImage(noteSmall, r[1].x, r[1].y, null);
-								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), r[1].x + r[1].width / 2 - 3, r[1].y + r[1].height / 2 + 3);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(2)), r[1].x + r[1].width / 2 - 3, r[1].y + r[1].height / 2 + 3);
 							}
 							if (thirdDragged) {
 								g2d.drawImage(noteSmall, r[2].x, r[2].y, null);
-								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), r[2].x + r[2].width / 2 - 3, r[2].y + r[2].height / 2 + 3);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(1)), r[2].x + r[2].width / 2 - 3, r[2].y + r[2].height / 2 + 3);
 							}
 							if (fourthDragged) {
 								g2d.drawImage(noteSmall, r[3].x, r[3].y, null);
-								g2d.drawString(String.valueOf(current.getNotesValues().get(i)), r[3].x + r[3].width / 2 - 3, r[3].y + r[3].height / 2 + 3);
+								g2d.drawString(String.valueOf(current.getNotesValues().get(0)), r[3].x + r[3].width / 2 - 3, r[3].y + r[3].height / 2 + 3);
 							} 
 							g2d.drawImage(noteSmall, 770 - 50 * i, 658, null);
 							g2d.drawString(String.valueOf(current.getNotesValues().get(i)), 780 - 50 * i, 679);
@@ -209,22 +209,6 @@ public class Inventory {
 
 	public Rectangle[] getRectangles() {
 		return r;
-	}
-
-	public int getNum1() {
-		return num1;
-	}
-
-	public int getNum2() {
-		return num2;
-	}
-
-	public int getNum3() {
-		return num3;
-	}
-
-	public int getNum4() {
-		return num4;
 	}
 
 	public BufferedImage getNoteImage(){

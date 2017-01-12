@@ -38,7 +38,9 @@ public abstract class Level {
 
 	public abstract void mouseMoved(MouseEvent e);
 	public abstract void keyPressed(KeyEvent e, Player p);
-
+	public abstract void mouseClicked(MouseEvent e);
+	public abstract void mouseReleased(MouseEvent e);
+	
 	public abstract int getTotalValue();
 
 	public abstract int getNotesCollected();
@@ -48,5 +50,9 @@ public abstract class Level {
 	public abstract ArrayList<Integer> getNotesValues();
 
 	public abstract void addNotesValues(int number);
+	
+	public abstract void sendInventory(Inventory i);
+
+	public abstract boolean getHacking();
 	
 }

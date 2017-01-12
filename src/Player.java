@@ -21,10 +21,10 @@ public class Player {
 	private double y;
 	private int height;
 	private int width;
-	
+
 	private double gunX;
 	private double gunY;
-	
+
 	private double pointX;
 	private double pointY;
 
@@ -41,7 +41,7 @@ public class Player {
 	private double pointY2;
 
 	private double pointX2;
-	
+
 	public Player(CashOut c){
 		try { 
 			spriteSheet = ImageIO.read(getClass().getResource("/Images/Sprites.png"));
@@ -57,7 +57,7 @@ public class Player {
 		y = 775;
 		width = currentImg.getWidth();
 		height = currentImg.getHeight();
-		
+
 		gunX = (int) x + width - 15;
 		gunY = (int) y;
 		pointX = x + width/2;
@@ -97,41 +97,40 @@ public class Player {
 
 		// Drawing the rotated image at the required drawing locations
 		if(op!=null) g2d.drawImage(op.filter(currentImg, null), (int)x, (int)y, null);
-	    else g2d.drawImage(currentImg, (int)x, (int)y, null);
-	    //g2d.setColor(Color.blue);
-	    //g2d.fillOval((int)gunX, (int)gunY, 10, 10);
-	    //g2d.fillOval((int) pointX, (int) pointY, 10, 10);
-	    //g2d.fillOval((int) pointX2, (int) pointY2, 10, 10);
-	    }
+		else g2d.drawImage(currentImg, (int)x, (int)y, null);
+
+	}
 
 	public void update(){
 		currentImg = sprites[frame];
-		
 	}
-	
-	public void move(double xM, double yM){
-		if (yM == 5) xM = -5;
-		else xM = 5;
-		
-		
-		x += xM * Math.sin(Math.toRadians(angle));
-		y += yM * Math.cos(Math.toRadians(angle));
-		
-		/*
-		double xTemp = x;
-		double yTemp = y;
-		double xTemp2 = pointX2;
-		double yTemp2 = pointY2;
-		
-		
-		
-		
-		if (!l.hit((int) xTemp, (int) yTemp) && !l.hit((int) xTemp2, (int) yTemp2)){
-			x = xTemp;
-			y = yTemp;
+
+	public void move(double xM, double yM, Levels levels){
+		int tempX = (int) pointX;
+		int tempY = (int) pointY;
+
+		int tempX2 = (int) pointX2;
+		int tempY2 = (int) pointY2;
+
+		if (yM == 5){ //down key
+			xM = -5;
+			tempX2 += xM * Math.sin(Math.toRadians(angle));
+			tempY2 += yM * Math.cos(Math.toRadians(angle));
+			if (!levels.getCurrent().hit(tempX2, tempY2)){
+				x += xM * Math.sin(Math.toRadians(angle));
+				y += yM * Math.cos(Math.toRadians(angle));
+			}
 		}
-		*/
-		
+		else{ //up key
+			xM = 5;
+			tempX += xM * Math.sin(Math.toRadians(angle));
+			tempY += yM * Math.cos(Math.toRadians(angle));
+			if (!levels.getCurrent().hit(tempX, tempY)){
+				x += xM * Math.sin(Math.toRadians(angle));
+				y += yM * Math.cos(Math.toRadians(angle));
+			}
+		}
+
 		if (frame < 12){
 			frame++;
 		}
@@ -142,37 +141,38 @@ public class Player {
 	public void turn(double angle){    
 		this.angle += angle;
 		double rotationRequired = Math.toRadians (this.angle);
-	    double locationX = currentImg.getWidth() / 2;
-	    double locationY = currentImg.getHeight() / 2;
-	    AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
-	    op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-	    int gx= currentImg.getWidth() - 15;
-	    int gy=0;
-	    Point pt1=new Point(gx, gy);
-	    Point pt2=new Point();
-	    tx.transform(pt1, pt2);
-	    gunX=(int)x+pt2.x; 
-	    gunY=(int)y+pt2.y;
-	    if (this.angle == 360){
-	    	this.angle = 0;
-	    }
-	    
-	    int px = currentImg.getWidth()/2;
-	    int py = 20;
-	    
-	    Point pt3=new Point(px, py);
-	    Point pt4=new Point();
-	    tx.transform(pt3, pt4);
-	    pointX=(int)x+pt4.x; 
-	    pointY=(int)y+pt4.y;
-	  
-	    int px2 = currentImg.getWidth()/2;
-	    int py2 = height  - 20;
-	    Point pt5=new Point(px2, py2);
-	    Point pt6=new Point();
-	    tx.transform(pt5, pt6);
-	    pointX2 = (int)x+pt6.x;
-	    pointY2= (int)y+pt6.y;	    
+		double locationX = currentImg.getWidth() / 2;
+		double locationY = currentImg.getHeight() / 2;
+		AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
+		op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+		int gx= currentImg.getWidth() - 15;
+		int gy=0;
+		Point pt1=new Point(gx, gy);
+		Point pt2=new Point();
+		tx.transform(pt1, pt2);
+		gunX=(int)x+pt2.x; 
+		gunY=(int)y+pt2.y;
+		
+		if (this.angle == 360){
+			this.angle = 0;
+		}
+
+		int px = currentImg.getWidth()/2;
+		int py = 20;
+
+		Point pt3=new Point(px, py);
+		Point pt4=new Point();
+		tx.transform(pt3, pt4);
+		pointX=(int)x+pt4.x; 
+		pointY=(int)y+pt4.y;
+
+		int px2 = currentImg.getWidth()/2;
+		int py2 = height  - 20;
+		Point pt5=new Point(px2, py2);
+		Point pt6=new Point();
+		tx.transform(pt5, pt6);
+		pointX2 = (int)x+pt6.x;
+		pointY2= (int)y+pt6.y;	    
 	}
 
 	public int getX() {
@@ -190,7 +190,7 @@ public class Player {
 	public int getGunY(){
 		return (int)gunY;
 	}
-	
+
 	public int getHeight(){
 		return height;
 	}
@@ -198,7 +198,7 @@ public class Player {
 	public int getWidth(){
 		return width;
 	}
-	
+
 	public synchronized void playGunshot() { //plays the pop sound effect
 		try {
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
@@ -211,7 +211,7 @@ public class Player {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public synchronized void playDryFire() { //plays the pop sound effect
 		try {
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
@@ -232,7 +232,7 @@ public class Player {
 			nb.set(0, null);
 			nb.remove(nb.get(0)); //removes the bullets from the game when tried to exceed 3
 		}
-		
+
 		if (nb.size() < 9) //only 9 bullet allowed at a time
 		{
 			nb.add(new Bullet(x, y, angle));//adds bullets to list when a new one is shot
@@ -240,7 +240,7 @@ public class Player {
 			game.addSuspicion(250);
 		}
 	}
-	
+
 	public ArrayList<Bullet> getNB()//sets position and movement of bullet
 	{
 		return nb;
@@ -285,15 +285,15 @@ public class Player {
 	{
 		return nb.size();
 	}
-	
+
 	public void printAngle(){
 		System.out.println(angle);
 	}
-	
+
 	public Point getPoint(){ //front of player
 		return new Point((int) pointX, (int) pointY);
 	}
-	
+
 	public Point getPoint2(){ //back of player
 		return new Point((int) pointX2, (int) pointY2);
 	}

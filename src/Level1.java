@@ -24,6 +24,8 @@ public class Level1 extends Level{
 	private int totalValue = 0;
 	private int notesCollected = 0;
 	private ArrayList<Integer> notesValues = new ArrayList<Integer>();
+	private Vault vault;
+	private boolean isHacking = false;
 
 	public Level1(CashOut c){
 		try { 
@@ -31,28 +33,30 @@ public class Level1 extends Level{
 		} catch (IOException e) { 
 			System.err.println("1st.png could not be found");
 		}
-
-		for (int i = 0; i < notes.length; i++){
-			notes[i] = new Note();
-		}
-
-		for (int i = 0; i < money.length; i++){
-			money[i] = new MoneyBag(c);
-			totalValue += money[i].getValue();
-		}
 		
-		laser = new Laser(700, 52, 90, 30);
-		
-		for (int i = 0; i < officers.length; i++){
-			officers[i] = new Officer();
-		}
-		
-		camera = new Camera (new Point(1100, 50), new Point(800, 200), new Point(1150, 200), c);
-
 		hits.add(new Rectangle(756, 0, 444, 50));
 		hits.add(new Rectangle(756, 167, 87, 66));
 		hits.add(new Rectangle(843, 167, 110, 733));
 		hits.add(new Rectangle(1090, 167, 105, 733));
+
+		for (int i = 0; i < notes.length; i++){
+			notes[i] = new Note(c, hits);
+		}
+
+		for (int i = 0; i < money.length; i++){
+			money[i] = new MoneyBag(c, hits);
+			totalValue += money[i].getValue();
+		}
+
+		laser = new Laser(700, 52, 90, 30);
+
+		for (int i = 0; i < officers.length; i++){
+			officers[i] = new Officer(hits);
+		}
+
+		camera = new Camera (new Point(1087, 57), new Point(1020, 200), new Point(960, 140), 32.0, -12.0);
+		vault = new Vault(960, 836, notes);
+
 		timer = new Timer(1150, 40, 25, 75, "WHITE", false);
 	}
 
@@ -66,11 +70,13 @@ public class Level1 extends Level{
 		for (int i = 0; i < money.length; i++){
 			money[i].paint(g2d);
 		}
-		laser.paint(g2d);
+
 		for (int i = 0; i < officers.length; i++){
 			officers[i].paint(g2d);
 		}
 		camera.paint(g2d);
+		laser.paint(g2d);
+		vault.paint(g2d);
 		/*g2d.setColor(Color.red);
 		g2d.fillRect(756, 0, 444, 50);
 		g2d.fillRect(756, 167, 87, 66);
@@ -82,8 +88,11 @@ public class Level1 extends Level{
 	}
 
 	public void update(Player p, CashOut c){
-		for (int i = 0; i < notes.length; i++){
-			notes[i].collect(p, this);
+		if (notesCollected < 4){ //remove after development
+			for (int i = 0; i < notes.length; i++){
+				notes[i].collect(p, this);
+				//notes[i].collectAll(p, this);
+			}
 		}
 
 		for (int i = 0; i < money.length; i++){
@@ -94,7 +103,8 @@ public class Level1 extends Level{
 		for (int i = 0; i < officers.length; i++){
 			officers[i].update(p, c, p.getNB());
 		}
-		//camera.detect(p.getPoint(), p.getPoint2());
+		camera.update(p, c);
+		vault.setInventory(c.getInventory());
 	}
 
 
@@ -107,9 +117,9 @@ public class Level1 extends Level{
 		return laser.getImage();
 	}
 
-	public BufferedImage getCameraImage(){
-		return camera.getImage();
-	}
+	//public BufferedImage getCameraImage(){
+	//	return camera.getImage();
+	//}
 
 	public BufferedImage getOfficerImage(){
 		return officers[0].getImage();
@@ -131,7 +141,7 @@ public class Level1 extends Level{
 
 	@Override
 	public boolean isFinished() {
-		return isFinished;
+		return vault.getUnlocked();
 	}
 
 	@Override
@@ -158,11 +168,13 @@ public class Level1 extends Level{
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		laser.mouseMoved(e);
-		
+
 	}
-	
+
 	public void keyPressed(KeyEvent e, Player p) {
 		laser.keyPressed(e, p);
+		vault.keyPressed(e,p, notesValues);
+		camera.keyPressed(e, p);
 	}
 
 	@Override
@@ -172,6 +184,12 @@ public class Level1 extends Level{
 
 	public int getNotesCollected() {
 		return notesCollected;
+	}
+
+	public void printNotesValues() {
+		for (Integer n: notesValues){
+			System.out.println(n);
+		}
 	}
 
 	public void addNotesCollected(int n) {
@@ -186,4 +204,26 @@ public class Level1 extends Level{
 		notesValues.add(n);
 	}
 
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		camera.mouseClicked(e);
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		vault.mouseReleased(e, notesValues);
+
+	}
+
+	public void sendInventory(Inventory i){
+		vault.setInventory(i);
+	}
+	
+	public void setHacking(boolean state){
+		isHacking = state;
+	}
+	
+	public boolean getHacking(){
+		return camera.getHacking() || laser.isHacking() || vault.isHacking();
+	}
 }

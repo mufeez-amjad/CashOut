@@ -55,11 +55,16 @@ public class MazePuzzle {
 
 	public void paint(Graphics2D g2d) {
 		if (!ready) {
+			Color yellowTrans = new Color(255, 255, 0, 127);
+			g2d.setColor(yellowTrans);
+			g2d.fillRect(0,0,1200, 900);
 			g2d.setColor(Color.decode("0x065C27"));
 			g2d.fillRect(0, 37, 60, 41);
 			g2d.setColor(Color.WHITE);
 			g2d.setFont(CashOut.getFontSmall());
 			g2d.drawString("Start", 8, 60);
+			
+
 		} else {
 			int alpha = 127; // 50% transparent
 			Color redTrans = new Color(255, 0, 0, alpha);

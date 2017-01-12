@@ -22,10 +22,16 @@ import javax.sound.sampled.Clip;
 import javax.swing.*;
 
 public class CashOut extends JPanel{
-	private Note note = new Note();
-
+	//talk to Donald about hit detection from nose, and how affinetransform works
+	//ask aobut line 97
+	//paper collecting sound
+	//prevent movement during hacking
+	//escape from hacking
+	//collect more notes prompt
+	//stop traffic from playing after settingsmenu
+	//delete Level 2-5 to speed up
 	private Player player;
-
+	
 	private Levels levels;
 	private Inventory inventory;
 
@@ -35,8 +41,7 @@ public class CashOut extends JPanel{
 
 	private BufferedImage suspicion;
 	private double suspicionLevel = 0;
-	//private MazePuzzle m1 = new MazePuzzle(45);
-	//private PicturePuzzle p1 = new PicturePuzzle(500, 500);
+
 	private int score = 0;
 	private static Font font;
 	private static Font fontBig;
@@ -46,12 +51,10 @@ public class CashOut extends JPanel{
 	private static Font fontHuge;
 	private int fadeIn = 255;
 	private Clip music;
-	private boolean playing = false;
+	private boolean playing = true;
 	private boolean paused = false;
 
-	//private Level1 current;
-
-	protected boolean isMenu = true;
+	protected boolean isMenu = false;
 
 	private boolean settingsExpanded;
 
@@ -93,8 +96,7 @@ public class CashOut extends JPanel{
 			System.err.println("Suspicion.png could not be found");
 		}
 
-
-
+		CashOut c = this;
 		addKeyListener(new KeyListener() {
 
 			@Override
@@ -106,57 +108,46 @@ public class CashOut extends JPanel{
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (playing && !paused){
-					int x = player.getPoint().x;
-					int y = player.getPoint().y;
-					double angle = player.getAngle();
 
-					int x2 = player.getPoint2().x;
-					int y2 = player.getPoint2().y;
+					//if (!levels.getCurrent().getHacking()){
 
-					if(e.getKeyCode()==KeyEvent.VK_UP){
-						x += 5 * Math.sin(Math.toRadians(angle));
-						y += -5 * Math.cos(Math.toRadians(angle));
 
-						x2 += 5 * Math.sin(Math.toRadians(angle));
-						y2 += -5 * Math.cos(Math.toRadians(angle));
+						if(e.getKeyCode()==KeyEvent.VK_UP){
 
-						if(!levels.getCurrent().hit(x, y)) player.move(0, -5);
-					} 
+							player.move(0, -5, levels);
+						} 
 
-					if(e.getKeyCode()==KeyEvent.VK_DOWN){
-						x += -5 * Math.sin(Math.toRadians(angle));
-						y += 5 * Math.cos(Math.toRadians(angle));
+						if(e.getKeyCode()==KeyEvent.VK_DOWN){
 
-						x2 += 5 * Math.sin(Math.toRadians(angle));
-						y2 += -5 * Math.cos(Math.toRadians(angle));
+							player.move(0, 5, levels);
+						} 
 
-						if(!levels.getCurrent().hit(x2, y2)) player.move(0, 5);
-					} 
+						if(e.getKeyCode()==KeyEvent.VK_LEFT){
+							player.turn(-5);
+						} 
 
-					if(e.getKeyCode()==KeyEvent.VK_LEFT){
-						player.turn(-5);
-					} 
+						if(e.getKeyCode()==KeyEvent.VK_RIGHT){
+							player.turn(5);
+						} 
 
-					if(e.getKeyCode()==KeyEvent.VK_RIGHT){
-						player.turn(5);
-					} 
 
-					if (e.getKeyCode() == KeyEvent.VK_Z) 
-					{
-						//Creates bullets when the spacebar is pressed, as long as the user is not exceeding 3 at a time
-						if(player.amountOfBullets() >= 0 && player.amountOfBullets() < 9)
+						if (e.getKeyCode() == KeyEvent.VK_Z) 
 						{
-							player.setNB(player.getGunX(), player.getGunY(), player.getAngle());
+							//Creates bullets when the spacebar is pressed, as long as the user is not exceeding 3 at a time
+							if(player.amountOfBullets() >= 0 && player.amountOfBullets() < 9)
+							{
+								player.setNB(player.getGunX(), player.getGunY(), player.getAngle());
+							}
+							else if (soundOn) player.playDryFire();
 						}
-						else if (soundOn) player.playDryFire();
 					}
 
-					if (e.getKeyCode() == KeyEvent.VK_X) 
+					if (e.getKeyCode() == KeyEvent.VK_X) //stop hacking
 					{
 						levels.getCurrent().keyPressed(e, player);
-						suspicionLevel = 0;
+						//suspicionLevel = 0;
 					}
-				}
+				//}
 
 				if (e.getKeyCode() == KeyEvent.VK_P) 
 				{
@@ -166,16 +157,17 @@ public class CashOut extends JPanel{
 			}
 
 		});
-		CashOut c = this;
+	
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				//System.out.println("x " + e.getX() + " y " + e.getY());
-				if (e.getX() > 670 && e.getX() < 745 && e.getY() > 700 && e.getY() < 775){
-					inventory.expandNotes();
-
+				System.out.println("x " + e.getX() + " y " + e.getY());
+				if (playing && !paused){
+					if (e.getX() > 670 && e.getX() < 745 && e.getY() > 700 && e.getY() < 775){
+						inventory.expandNotes();
+					}
+					levels.getCurrent().mouseClicked(e);
 				}
-				//if (!p1.complete()) p1.clicked(e);
 				if (isMenu) menu.mouseClicked(e, c);
 
 				if (paused){
@@ -207,7 +199,7 @@ public class CashOut extends JPanel{
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-
+				levels.getCurrent().mouseReleased(e);
 			}
 
 
@@ -216,8 +208,14 @@ public class CashOut extends JPanel{
 		addMouseMotionListener(new MouseAdapter() {
 			public void mouseMoved(MouseEvent e) {
 				if (levels.mazePuzzle()) levels.getCurrent().mouseMoved(e);
+
 			}
-			public void mouseDragged(MouseEvent e){ }
+			public void mouseDragged(MouseEvent e){
+				if (playing){
+					levels.getCurrent().sendInventory(inventory);
+					inventory.isDragged(e);					
+				}
+			}
 		});
 
 		playMusic();
@@ -273,7 +271,6 @@ public class CashOut extends JPanel{
 			FontMetrics fontMetrics = g2d.getFontMetrics(fontHuge);
 			int stringlength = fontMetrics.stringWidth("PAUSED");
 			g2d.drawString("PAUSED", frameWidth/2 - stringlength/2, 400);
-			//add settings menu
 			g2d.setColor(Color.decode("0x89C280"));
 			if (settingsExpanded) g2d.fillRoundRect(20, 700, menu.getSettingsMenu().getWidth(), 150, 25, 25);
 			g2d.drawImage(menu.getSettingsMenu(), 20, 800, null);
@@ -292,8 +289,11 @@ public class CashOut extends JPanel{
 		}
 		else if (!paused){
 			if (!levels.getCurrent().getTimer().isRunning()) levels.getCurrent().getTimer().stopStart();
+			if (levels.getCurrent().getTimer().getTimesUp()){
+				gameOver = true;
+				playing = false;
+			}
 			player.update();
-			//m1.update();
 
 			levels.update(player, this);
 			inventory.update(player, levels);
@@ -312,12 +312,6 @@ public class CashOut extends JPanel{
 			gameOver = true;
 			playing = false;
 		}
-	}
-
-	public void setDifficulty(int n){
-		//if (n == 1) Easy = true;
-		//else if (n == 2) Medium = true;
-		//else Hard = true;
 	}
 
 
@@ -418,6 +412,10 @@ public class CashOut extends JPanel{
 
 	public Levels getLevels(){
 		return levels;
+	}
+
+	public Inventory getInventory() {
+		return inventory;
 	}
 
 

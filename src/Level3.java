@@ -117,4 +117,28 @@ public class Level3 extends Level {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sendInventory(Inventory i) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean getHacking() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

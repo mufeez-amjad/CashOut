@@ -79,6 +79,7 @@ public class Laser {
 	}
 
 	public void keyPressed(KeyEvent e, Player p){
+		
 		int x1 = p.getPoint().x;
 		int y1 = p.getPoint().y;
 		
@@ -88,16 +89,15 @@ public class Laser {
 			//if (p.getX() > x - 100 && p.getX() < x + 100 && p.getY() > y - 100 && p.getY() < y + 100){
 			if ((x1 > x && x1 < x + 100 && y1 > y  && y1 < y + 100) || (x2 > x && x2 < x + 100 && y2 > y && y2 < y + 100)){ //if player is close by
 				if (e.getKeyCode()==KeyEvent.VK_X){
+					hacking = !hacking;
 					reset();
-					//System.out.println("HACKING");
-					hacking = true;
 				}
 			}
 		}
 	}
 
 	public boolean isHacking() {
-		return hacking;
+		return !m.isFinished();
 	}
 
 	public boolean isDisabled() {
