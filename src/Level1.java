@@ -1,6 +1,5 @@
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -11,100 +10,67 @@ import javax.imageio.ImageIO;
 
 public class Level1 extends Level{
 	private BufferedImage level;
+	private ArrayList<Rectangle> hits = new ArrayList<Rectangle>();
 	private Note[] notes = new Note[4];
 	private MoneyBag[] money = new MoneyBag[5];
-	private Officer[] officers = new Officer[2];
-	private Laser laser;
-	private Camera camera;
-	private ArrayList<Rectangle> hits = new ArrayList<Rectangle>();
+	private Laser laser = new Laser(0,0,0,0);
+	private Officer officer = new Officer(0,0,0, hits);
+	
 	private Timer timer;
-	private boolean isFinished = false;
 	private boolean isUnlocked = true;
 	private boolean hackingLaser = true;
 	private int totalValue = 0;
 	private int notesCollected = 0;
 	private ArrayList<Integer> notesValues = new ArrayList<Integer>();
 	private Vault vault;
-	private boolean isHacking = false;
+	private int score = 0;
+	private int highScore = 0;
 
-	public Level1(CashOut c){
+	public Level1(CashOut c, Player p){
 		try { 
-			level = ImageIO.read(getClass().getResource("/Images/1st.png"));
+			level = ImageIO.read(getClass().getResource("/Images/Levels-01.png"));
 		} catch (IOException e) { 
-			System.err.println("1st.png could not be found");
+			System.err.println("Levels-01.png could not be found");
 		}
 		
-		hits.add(new Rectangle(756, 0, 444, 50));
-		hits.add(new Rectangle(756, 167, 87, 66));
-		hits.add(new Rectangle(843, 167, 110, 733));
-		hits.add(new Rectangle(1090, 167, 105, 733));
 
+		hits.add(new Rectangle(874, 169, 127, 33));
+		hits.add(new Rectangle(968, 201, 33, 699));
+		
 		for (int i = 0; i < notes.length; i++){
 			notes[i] = new Note(c, hits);
 		}
+		
+		vault = new Vault(1080, 836, notes, false, 0);
 
 		for (int i = 0; i < money.length; i++){
 			money[i] = new MoneyBag(c, hits);
 			totalValue += money[i].getValue();
 		}
-
-		laser = new Laser(700, 52, 90, 30);
-
-		for (int i = 0; i < officers.length; i++){
-			officers[i] = new Officer(hits);
-		}
-
-		camera = new Camera (new Point(1087, 57), new Point(1020, 200), new Point(960, 140), 32.0, -12.0);
-		vault = new Vault(960, 836, notes);
-
-		timer = new Timer(1150, 40, 25, 75, "WHITE", false);
+		
+		timer = new Timer(1150, 40, 25, 30, "WHITE", false);
 	}
 
 	public void paint(Graphics2D g2d){
-		g2d.drawImage(level, 0, 0, null);
-
-		for (int i = 0; i < notes.length; i++){
-			notes[i].paint(g2d);
-		}
+		//g2d.drawImage(level, 0, 0, null);
 
 		for (int i = 0; i < money.length; i++){
 			money[i].paint(g2d);
 		}
 
-		for (int i = 0; i < officers.length; i++){
-			officers[i].paint(g2d);
-		}
-		camera.paint(g2d);
-		laser.paint(g2d);
+		
 		vault.paint(g2d);
-		/*g2d.setColor(Color.red);
-		g2d.fillRect(756, 0, 444, 50);
-		g2d.fillRect(756, 167, 87, 66);
-		g2d.fillRect(843, 167, 110, 733);
-		g2d.fillRect(1090, 167, 105, 733);
-		 */
 
 		timer.paint(g2d);
 	}
 
 	public void update(Player p, CashOut c){
-		if (notesCollected < 4){ //remove after development
-			for (int i = 0; i < notes.length; i++){
-				notes[i].collect(p, this);
-				//notes[i].collectAll(p, this);
-			}
-		}
 
 		for (int i = 0; i < money.length; i++){
 			money[i].collect(p);
 		}
 
-		laser.update(p, c);
-		for (int i = 0; i < officers.length; i++){
-			officers[i].update(p, c, p.getNB());
-		}
-		camera.update(p, c);
-		vault.setInventory(c.getInventory());
+		vault.update(c.getInventory(), notesCollected);
 	}
 
 
@@ -113,22 +79,12 @@ public class Level1 extends Level{
 		return null;
 	}
 
-	public BufferedImage getLaserImage(){
-		return laser.getImage();
-	}
 
-	//public BufferedImage getCameraImage(){
-	//	return camera.getImage();
-	//}
-
-	public BufferedImage getOfficerImage(){
-		return officers[0].getImage();
-	}
-
-	public boolean hit(int x, int y){
+	public boolean hit(Rectangle h){
 		boolean hit = false;
-		for (Rectangle r: hits){
-			if (x > r.getX() && x < r.getX() + r.getWidth() && y > r.getY() && y < r.getY() + r.getHeight()){
+		//System.out.println("hit");
+		for (Rectangle r: hits){ //x > r.getX() && x < r.getX() + r.getWidth() && y > r.getY() && y < r.getY() + r.getHeight()
+			if (h.intersects(r)){
 				hit = true;
 			}
 		}
@@ -167,14 +123,10 @@ public class Level1 extends Level{
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		laser.mouseMoved(e);
-
 	}
 
 	public void keyPressed(KeyEvent e, Player p) {
-		laser.keyPressed(e, p);
 		vault.keyPressed(e,p, notesValues);
-		camera.keyPressed(e, p);
 	}
 
 	@Override
@@ -205,8 +157,8 @@ public class Level1 extends Level{
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		camera.mouseClicked(e);
+	public void mouseClicked(MouseEvent e, Inventory i) {
+		
 	}
 
 	@Override
@@ -219,11 +171,83 @@ public class Level1 extends Level{
 		vault.setInventory(i);
 	}
 	
-	public void setHacking(boolean state){
-		isHacking = state;
+	public boolean getHacking(){
+		return false;
+	}
+
+	@Override
+	public void setCurrentLevel(boolean b, Player p) {
+		p.setXY(540, 775, 0);
+	}
+
+	@Override
+	public void addScore(int n) {
+		score += n;
+	}
+
+	@Override
+	public int getScore() {
+		return score;
+	}
+
+	@Override
+	public Note[] getNotes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Image getLaserImage() {
+		
+		return laser.getImage();
+	}
+
+	public Image getOfficerImage() {
+		return officer.getImage();
+	}
+
+	@Override
+	public void setHighScore(int s) {
+		highScore = s;
+		isUnlocked = !(s == 0);
+	}
+
+	@Override
+	public int getHighScore() {
+		return highScore ;
+	}
+
+	@Override
+	public void unlock() {
+		isUnlocked = true;
 	}
 	
-	public boolean getHacking(){
-		return camera.getHacking() || laser.isHacking() || vault.isHacking();
+	@Override
+	public boolean isOfficer1Dead() {
+		// TODO Auto-generated method stub
+		return false;
 	}
+
+	@Override
+	public boolean isOfficer2Dead() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void paintOfficer1(Graphics2D g2d) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void paintOfficer2(Graphics2D g2d) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public BufferedImage getBG() {
+		return level;
+	}
+
 }

@@ -16,14 +16,13 @@ public class MoneyBag {
 
 	private BufferedImage bag;
 	private int value;
-	Random rand = new Random();
+	private Random rand = new Random();
 	private int x;
 	private int y;
 	private int width;
 	private int height;
 	private boolean isCollected = false;
-	private boolean animated = false;
-	
+
 	private int counter = 0;
 	private CashOut game;
 
@@ -37,18 +36,18 @@ public class MoneyBag {
 		value *= 50;
 		x = rand.nextInt(1100);
 		y = rand.nextInt(800);
-		
+		width = bag.getWidth();
+		height = bag.getHeight();
+		Rectangle hit = new Rectangle(x, y, width + 100, height + 100);
 		for (int i = 0; i < hits.size(); i++){
-			if (x > hits.get(i).getX() && x < hits.get(i).getX() + hits.get(i).getWidth() && y > hits.get(i).getY() && y < hits.get(i).getY() + hits.get(i).getHeight()){
+			while (hit.intersects(hits.get(i))){
 				x = rand.nextInt(1100);
 				y = rand.nextInt(800);
 				i = 0;
-				System.out.println("respawn");
+				hit = new Rectangle(x, y, width, height);
 			}
 		}
 		
-		width = bag.getWidth();
-		height = bag.getHeight();
 		game = c;
 	}
 
@@ -72,18 +71,16 @@ public class MoneyBag {
 	}
 
 	public void collect(Player p){
-		int pX = p.getPoint().x;
-		int pY = p.getPoint().y;
 		
-		if (!isCollected){
-			if (pX > x && pY > y && pX < x + width && pY < y + height){
+		if (!isCollected){ // pX > x && pY > y && pX < x + width && pY < y + height
+			if (p.getHitbox().contains(x + width/2, y + height/2)){
 				isCollected  = true;
-				game.addScore(value);
+				game.getLevels().getCurrent().addScore(value);
 				if (game.getSoundState()) playSound();
 			}
 		}
 	}
-	
+
 	public synchronized void playSound() { //plays the sound effect
 		new Thread(new Runnable() { //creates a new thread
 			public void run() {
@@ -103,7 +100,7 @@ public class MoneyBag {
 	public int getValue(){
 		return value;
 	}
-	
+
 	public BufferedImage getImage(){
 		return bag;
 	}

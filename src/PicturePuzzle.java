@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -22,7 +23,6 @@ public class PicturePuzzle {
 	private boolean clicked7 = false;
 	private boolean clicked8 = false;
 	private boolean clicked9 = false;
-	private int remainingMoves = 10;
 	private BufferedImage img1;
 	private BufferedImage img2;
 	private BufferedImage img3;
@@ -34,11 +34,13 @@ public class PicturePuzzle {
 	private BufferedImage img9;
 	private int locationX;
 	private int locationY;
+	private int totalMoves;
+	private int moves;
 
 	public PicturePuzzle(int x, int y) {
 		locationX = x;
-		locationY = y;
-		remainingMoves = 10;
+		locationY = y + 100;
+		totalMoves = 10;
 		try {
 			img1 = ImageIO.read(getClass().getResource("/Images/dollar_01.gif"));
 			img2 = ImageIO.read(getClass().getResource("/Images/dollar_02.gif"));
@@ -98,11 +100,11 @@ public class PicturePuzzle {
 	}
 
 	public void setRemainingMoves(int m) {
-		remainingMoves = m;
+		totalMoves = m;
 	}
 	
 	public boolean failed() {
-		if (remainingMoves < 1 && !complete()) {
+		if (moves == totalMoves && !complete()) {
 			return true;
 		}
 		else {
@@ -111,6 +113,7 @@ public class PicturePuzzle {
 	}
 
 	public void clicked(MouseEvent e) {
+	
 		// 1
 		if (e.getX() >= locationX && e.getY() >= locationY && e.getX() <= locationX + puzzle[0][0].getWidth()
 				&& e.getY() <= puzzle[0][0].getHeight() + locationY) {
@@ -120,7 +123,6 @@ public class PicturePuzzle {
 			} else {
 				firstImage = puzzle[0][0];
 				clicked1 = true;
-				System.out.println("CLICKED");
 			}
 
 		}
@@ -134,7 +136,6 @@ public class PicturePuzzle {
 			} else {
 				firstImage = puzzle[0][1];
 				clicked2 = true;
-				System.out.println("CLICKED");
 			}
 		}
 		// 3
@@ -147,7 +148,6 @@ public class PicturePuzzle {
 			} else {
 				firstImage = puzzle[0][2];
 				clicked3 = true;
-				System.out.println("CLICKED");
 			}
 		}
 		// 4
@@ -160,7 +160,6 @@ public class PicturePuzzle {
 			} else {
 				firstImage = puzzle[1][0];
 				clicked4 = true;
-				System.out.println("CLICKED");
 			}
 
 		}
@@ -174,7 +173,6 @@ public class PicturePuzzle {
 			} else {
 				firstImage = puzzle[1][1];
 				clicked5 = true;
-				System.out.println("CLICKED");
 			}
 		}
 		// 6
@@ -188,7 +186,6 @@ public class PicturePuzzle {
 			} else {
 				firstImage = puzzle[1][2];
 				clicked6 = true;
-				System.out.println("CLICKED");
 			}
 		}
 		// 7
@@ -201,7 +198,6 @@ public class PicturePuzzle {
 			} else {
 				firstImage = puzzle[2][0];
 				clicked7 = true;
-				System.out.println("CLICKED");
 			}
 
 		}
@@ -216,7 +212,6 @@ public class PicturePuzzle {
 			} else {
 				firstImage = puzzle[2][1];
 				clicked8 = true;
-				System.out.println("CLICKED");
 			}
 		}
 		// 9
@@ -230,7 +225,6 @@ public class PicturePuzzle {
 			} else {
 				firstImage = puzzle[2][2];
 				clicked9 = true;
-				System.out.println("CLICKED");
 			}
 		}
 	}
@@ -248,8 +242,7 @@ public class PicturePuzzle {
 	}
 
 	public void swap(BufferedImage img1, BufferedImage img2) {
-		remainingMoves--;
-		//System.out.println("swapping");
+		moves++;
 		int img1Row = 0;
 		int img1Col = 0;
 		int img2Row = 0;
@@ -280,7 +273,11 @@ public class PicturePuzzle {
 		clicked9 = false;
 	}
 
-	public void paint(Graphics2D g2d) {		
+	public void paint(Graphics2D g2d) {
+		Color yellowTrans = new Color(255, 255, 0, 127);
+		g2d.setColor(yellowTrans);
+		g2d.fillRect(0,0,1200, 900);
+
 		int initialX = locationX;
 		int initialY = locationY;
 		for (int h = 0; h < 3; h++) {
@@ -328,11 +325,64 @@ public class PicturePuzzle {
 			g2d.drawRect(locationX + 2 * (puzzle[0][0].getWidth() + 6), locationY + 2 * (puzzle[0][0].getHeight() + 6),
 					firstImage.getWidth(), firstImage.getHeight());
 		}
+		FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontHuge());
+		g2d.setColor(Color.black);
+		g2d.setFont(CashOut.getFontHuge());
+		int stringLength = fontMetrics.stringWidth("Moves left " + String.valueOf(totalMoves - moves));
+		g2d.drawString("Moves left " + String.valueOf(totalMoves - moves), (CashOut.getFrameWidth()/2) - (stringLength/2) + 25, 250);
 
 	}
 
 	public boolean isFinished() {
 		return complete() || failed();
+	}
+
+	public boolean getHacking() {
+		return !complete() && !failed();
+	}
+
+	public void reset() {
+		moves = 0;
+		List<Integer> list = new ArrayList<Integer>();
+		for (int i = 1; i < 10; i++)
+			list.add(i);
+		Collections.shuffle(list);
+		BufferedImage img = img1;
+		int counter = 0;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (list.get(counter) == 1)
+					img = img1;
+				if (list.get(counter) == 2)
+					img = img2;
+				if (list.get(counter) == 3)
+					img = img3;
+				if (list.get(counter) == 4)
+					img = img4;
+				if (list.get(counter) == 5)
+					img = img5;
+				if (list.get(counter) == 6)
+					img = img6;
+				if (list.get(counter) == 7)
+					img = img7;
+				if (list.get(counter) == 8)
+					img = img8;
+				if (list.get(counter) == 9)
+					img = img9;
+				puzzle[i][j] = img;
+				counter++;
+			}
+		}
+		
+		clicked1 = false;
+		clicked2 = false;
+		clicked3 = false;
+		clicked4 = false;
+		clicked5 = false;
+		clicked6 = false;
+		clicked7 = false;
+		clicked8 = false;
+		clicked9 = false;
 	}
 
 

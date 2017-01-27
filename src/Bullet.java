@@ -7,23 +7,19 @@ import java.awt.image.AffineTransformOp;
 
 public class Bullet
 {  
-	//width = 6px, height = 8px
 	private BufferedImage bullet = null;
-	private BufferedImage img2 = null;
 	private double x, y;
 	private double angle;
-	//Creates an instance of timer since each bullet is supposed to only last 1.5 seconds
 	private Stopwatch timer = new Stopwatch();
 
 	public Bullet(int x, int y, double angle)
 	{   
-		//Get the image of the normal bullet
 		try { 
 			bullet = ImageIO.read(getClass().getResource("/Images/Bullet.png"));
 		} catch (IOException e) { 
 			System.err.println("Bullet.png could not be found");
 		}
-		//Sets the position and direction of the bullet relative to the spacecraft when it is created
+
 		timer.start();
 		this.x=x;
 		this.y=y;
@@ -32,7 +28,7 @@ public class Bullet
 
 	public void paint(Graphics2D g2d)
 	{
-		//Since the bullet sprite is not always oriented in the direction of the shot, orient it properly
+		//rotates the bullet
 		angle-=90;
 
 		double rotationRequired = Math.toRadians(angle);
@@ -42,10 +38,10 @@ public class Bullet
 		AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
 
 		// Drawing the rotated image at the required drawing locations
-		int x = (int) this.x;
-		int y = (int) this.y;
+		int xB = (int) this.x;
+		int yB = (int) this.y;
 		//g.drawImage(img2, x - 150, y - 150, null);
-		g2d.drawImage(op.filter(bullet, null), x, y, null);
+		g2d.drawImage(op.filter(bullet, null), xB, yB, null);
 		//Change the angle back to the original for the bullet to travel in the correct direction
 		angle+=90;
 

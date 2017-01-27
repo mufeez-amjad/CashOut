@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -21,17 +20,10 @@ public class Inventory {
 	private boolean thirdDragged = false;
 	private boolean fourthDragged = false;
 	private Rectangle[] r = new Rectangle[4];
-	private int prevX;
-	private int prevY;
-	private int num1;
-	private int num2;
-	private int num3;
-	private int num4;
 
 	private boolean isExpanded = false;
 	private int numOfBullets;
 	private Level current;
-	private Levels levels;
 
 	public Inventory() {
 
@@ -161,8 +153,15 @@ public class Inventory {
 								g2d.drawImage(noteSmall, r[3].x, r[3].y, null);
 								g2d.drawString(String.valueOf(current.getNotesValues().get(0)), r[3].x + r[3].width / 2 - 3, r[3].y + r[3].height / 2 + 3);
 							} 
-							g2d.drawImage(noteSmall, 770 - 50 * i, 658, null);
-							g2d.drawString(String.valueOf(current.getNotesValues().get(i)), 780 - 50 * i, 679);
+							//g2d.drawImage(noteSmall, 770 - 50 * i, 658, null);
+							if (!fourthDragged && i == 0) g2d.drawImage(noteSmall, 770 - 50 * 0, 658, null);
+							if (!thirdDragged && i == 1) g2d.drawImage(noteSmall, 770 - 50 * 1, 658, null);
+							if (!secondDragged && i == 2) g2d.drawImage(noteSmall, 770 - 50 * 2, 658, null);
+							if (!firstDragged && i == 3) g2d.drawImage(noteSmall, 770 - 50 * 3, 658, null);
+							if (!fourthDragged && i == 0) g2d.drawString(String.valueOf(current.getNotesValues().get(0)), 780 - 50 * 0, 679);
+							if (!thirdDragged && i == 1) g2d.drawString(String.valueOf(current.getNotesValues().get(1)), 780 - 50 * 1, 679);
+							if (!secondDragged && i == 2) g2d.drawString(String.valueOf(current.getNotesValues().get(2)), 780 - 50 * 2, 679);
+							if (!firstDragged && i == 3) g2d.drawString(String.valueOf(current.getNotesValues().get(3)), 780 - 50 * 3, 679);
 						}
 					}
 				}
@@ -214,8 +213,31 @@ public class Inventory {
 	public BufferedImage getNoteImage(){
 		return note;
 	}
-
-	public void addLevels(Levels l) {
-		levels = l;
+	
+	public void reset(boolean unExpand){
+		for (int i = 0; i < 4; i++) {
+			r[i] = new Rectangle();
+			if (i == 0) {
+				r[i].x = 620 + 1;
+			}
+			if (i == 1) {
+				r[i].x = 670 + 1;
+			}
+			if (i == 2) {
+				r[i].x = 720 + 1;
+			}
+			if (i == 3) {
+				r[i].x = 770 + 1;
+			}
+			r[i].y = 658 + 1;
+			r[i].width = noteSmall.getWidth();
+			r[i].height = noteSmall.getHeight();
+		}
+		firstDragged = false;
+		secondDragged = false;
+		thirdDragged = false;
+		fourthDragged = false;
+		if (unExpand) isExpanded = false;
 	}
+
 }

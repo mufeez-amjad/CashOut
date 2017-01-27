@@ -6,26 +6,12 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public abstract class Level {
-	private Note[] notes = new Note[4];
-	private MoneyBag[] money = new MoneyBag[5];
-	
-	private Laser[] lasers = new Laser[4];
-	private Camera[] cameras = new Camera[5];
-	private Officer[] officers = new Officer[5];
-	private Vault vault;
-	private ArrayList<Integer> notesValues = new ArrayList<Integer>();
-
-	private BufferedImage level;
-	private ArrayList<Rectangle> hits = new ArrayList<Rectangle>();
-	private Timer timer;
-	private boolean isFinished = false;
-	private boolean isUnlocked = false;	
-		
+			
 	public abstract void paint(Graphics2D g2d);
 	
 	public abstract void update(Player p, CashOut c);
 		
-	public abstract boolean hit(int x, int y);
+	public abstract boolean hit(Rectangle h);
 
 	public abstract Timer getTimer();	
 	
@@ -38,9 +24,8 @@ public abstract class Level {
 
 	public abstract void mouseMoved(MouseEvent e);
 	public abstract void keyPressed(KeyEvent e, Player p);
-	public abstract void mouseClicked(MouseEvent e);
+	public abstract void mouseClicked(MouseEvent e, Inventory i);
 	public abstract void mouseReleased(MouseEvent e);
-	
 	public abstract int getTotalValue();
 
 	public abstract int getNotesCollected();
@@ -55,4 +40,23 @@ public abstract class Level {
 
 	public abstract boolean getHacking();
 	
+	public abstract void setCurrentLevel(boolean b, Player p);
+
+	public abstract void addScore(int value);
+
+	public abstract int getScore();
+
+	public abstract Note[] getNotes();
+	
+	public abstract void setHighScore(int s);
+	
+	public abstract int getHighScore();
+	
+	public abstract void unlock();
+	public abstract boolean isOfficer1Dead();
+	public abstract boolean isOfficer2Dead();
+	public abstract void paintOfficer1(Graphics2D g2d);
+	public abstract void paintOfficer2(Graphics2D g2d);
+
+	public abstract BufferedImage getBG();
 }

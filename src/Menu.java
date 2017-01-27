@@ -1,10 +1,12 @@
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -17,25 +19,23 @@ public class Menu {
 	private BufferedImage GALogo;
 	private BufferedImage bg;
 	private BufferedImage gameLogo;
+	private BufferedImage GAPresents;
 	private BufferedImage plane;
 	private BufferedImage controls;
-	private BufferedImage divider;
 	private BufferedImage buttons;
 	private BufferedImage back;
 	private BufferedImage settings;
-	private BufferedImage settingsMenu;
 	private BufferedImage music;
 	private BufferedImage musicOff;
 	private BufferedImage soundfx;
 	private BufferedImage soundfxOff;
 	private BufferedImage[] exhaust = new BufferedImage[3];
-	private BufferedImage exhaustSprites;
 	private BufferedImage car1;
 	private BufferedImage car2;
 	private BufferedImage taxi;
-	private BufferedImage one;
-	private BufferedImage two;
-	private BufferedImage three;
+
+	private boolean introDone = false;
+
 	private BufferedImage levelBag;
 	private BufferedImage levelBagGray;
 
@@ -48,21 +48,21 @@ public class Menu {
 	private double cloudCounter = 0;
 	private int smokeCounter = 0;
 	private int menuCounter = 0;
-
+	private int introFadeCounter = 255;
+	private double introCounter = 0;
+	
 	private boolean settingsExpanded = false;
 	private boolean levelSelected = false;
 	private BufferedImage smoke;
 	private BufferedImage currentImg;
 	private int frame;
 	private boolean information = false;
+	private int extraInformation = 0;
 	private boolean play = false;
-	private boolean scores = false;
 	private boolean main = true;
 	private boolean reversed;
 	private boolean musicOn = true;
 	private boolean soundOn = true;
-
-	private Level1 level;
 
 	private int planeX = 1500;
 	private int taxiX = -300;
@@ -78,16 +78,38 @@ public class Menu {
 	private Levels gameLevels;
 	private Level[] levels;
 	private boolean gameOver = false;
+	private boolean win = false;
+
 	private BufferedImage camera;
+	private BufferedImage laser;
+	private BufferedImage moneyBag;
+	private BufferedImage officer;
+	private BufferedImage vault;
+	private BufferedImage retry;
+	private boolean reset;
+	private BufferedImage picturePuzzle;
+	private BufferedImage mazePuzzle;
+	private Image mazePuzzleSmall;
+	private Image cameraSmall;
+	private Image l;
+	private Image v;
+	private Image o;
+	private BufferedImage cameraHolder;
+	private BufferedImage vaultPuzzle;
+	private BufferedImage moneyBagHuge;
+	private BufferedImage suspicion;
 
 
 	public boolean isMenuExit() {
 		return menuExit;
 	}
 
-	public Menu(Inventory inventory, Level1 l, CashOut c){
+	public void setMenuExit(boolean b) {
+		menuExit = b;
+	}
+
+	public Menu(Inventory inventory, CashOut c){
 		inv = inventory;
-		level = l;
 		game = c;
 		try { 
 			GALogo = ImageIO.read(getClass().getResource("/Images/GAStudios.png"));
@@ -96,9 +118,81 @@ public class Menu {
 		}
 
 		try { 
+			GAPresents = ImageIO.read(getClass().getResource("/Images/Intro.png"));
+		} catch (IOException e) { 
+			System.err.println("Intro.png could not be found");
+		}
+
+		try { 
+			mazePuzzle = ImageIO.read(getClass().getResource("/Images/mousemaze.png"));
+		} catch (IOException e) { 
+			System.err.println("GAStudios.png could not be found");
+		}
+
+		try { 
+			picturePuzzle = ImageIO.read(getClass().getResource("/Images/PicturePuzzle.png"));
+		} catch (IOException e) { 
+			System.err.println("GAStudios.png could not be found");
+		}
+
+		try { 
+			vaultPuzzle = ImageIO.read(getClass().getResource("/Images/VaultPuzzle.png"));
+		} catch (IOException e) { 
+			System.err.println("GAStudios.png could not be found");
+		}
+
+		try { 
+			moneyBagHuge = ImageIO.read(getClass().getResource("/Images/moneyBagHuge.png"));
+		} catch (IOException e) { 
+			System.err.println("GAStudios.png could not be found");
+		}
+
+		try { 
+			suspicion = ImageIO.read(getClass().getResource("/Images/Suspicion.png"));
+		} catch (IOException e) { 
+			System.err.println("Suspicion.png could not be found");
+		}
+
+		try { 
+			laser = ImageIO.read(getClass().getResource("/Images/Laser.png"));
+		} catch (IOException e) { 
+			System.err.println("Laser.png could not be found");
+		}
+
+		try { 
+			moneyBag = ImageIO.read(getClass().getResource("/Images/MoneyBag.png"));
+		} catch (IOException e) { 
+			System.err.println("Laser.png could not be found");
+		}
+
+		try { 
+			officer = ImageIO.read(getClass().getResource("/Images/Officer.png"));
+		} catch (IOException e) { 
+			System.err.println("Officer.png could not be found");
+		}
+
+		try { 
+			vault = ImageIO.read(getClass().getResource("/Images/vault.png"));
+		} catch (IOException e) { 
+			System.err.println("Officer.png could not be found");
+		}
+
+		try { 
+			retry = ImageIO.read(getClass().getResource("/Images/Retry.png"));
+		} catch (IOException e) { 
+			System.err.println("Retry.png could not be found");
+		}
+
+		try { 
 			camera = ImageIO.read(getClass().getResource("/Images/beam.png"));
 		} catch (IOException e) { 
 			System.err.println("beam.png could not be found");
+		}
+
+		try { 
+			cameraHolder = ImageIO.read(getClass().getResource("/Images/cameraHolder.png"));
+		} catch (IOException e) { 
+			System.err.println("cameraHolder.png could not be found");
 		}
 
 		try { 
@@ -200,21 +294,6 @@ public class Menu {
 		}
 
 		try { 
-			one = ImageIO.read(getClass().getResource("/Images/One.png"));
-		} catch (IOException e) { 
-			System.err.println("One.png could not be found");
-		}
-		try { 
-			two = ImageIO.read(getClass().getResource("/Images/Two.png"));
-		} catch (IOException e) { 
-			System.err.println("Two.png could not be found");
-		}
-		try { 
-			three = ImageIO.read(getClass().getResource("/Images/Three.png"));
-		} catch (IOException e) { 
-			System.err.println("Three.png could not be found");
-		}
-		try { 
 			smoke = ImageIO.read(getClass().getResource("/Images/smoke.png"));
 		} catch (IOException e) { 
 			System.err.println("smoke.png could not be found");
@@ -225,9 +304,17 @@ public class Menu {
 		}
 		currentImg = exhaust[0];
 		playTraffic();
+
+		cameraSmall = camera.getScaledInstance(30, 26, Image.SCALE_DEFAULT);
+		mazePuzzleSmall = mazePuzzle.getScaledInstance(300, 225, Image.SCALE_DEFAULT);
+		l = laser.getScaledInstance(40, 40, Image.SCALE_DEFAULT);
+		v = vault.getScaledInstance(40, 40, Image.SCALE_DEFAULT);
+		o = officer.getScaledInstance(75, 75, Image.SCALE_DEFAULT);
+
 	}
 
 	public void paint(Graphics2D g2d){
+
 		g2d.drawImage(bg, 0, 0, null);
 
 		g2d.setColor(Color.decode("0xE2F5FF"));
@@ -263,127 +350,49 @@ public class Menu {
 
 		g2d.drawImage(car2, car2x, 570, null);
 		g2d.drawImage(currentImg, car2x + 300 + currentImg.getWidth(), 570 + 25, -currentImg.getWidth(), currentImg.getHeight(), null);
-
-
-
-		if (main){
-			int x = (CashOut.getFrameWidth() - buttons.getWidth()) / 2; //gets the dimensions of the buttons
-			int y = (CashOut.getFrameHeight() - buttons.getHeight(null)) / 2 + 275;
-			g2d.drawImage(buttons, x, y + menuCounter, null);
-			x = (CashOut.getFrameWidth() - gameLogo.getWidth()) / 2; //gets the dimensions of the gameLogo
-			y = (CashOut.getFrameHeight() - gameLogo.getHeight(null)) / 2 - 200;
-			g2d.drawImage(gameLogo, x, y - menuCounter, null);
-			x = (CashOut.getFrameWidth() - GALogo.getWidth()) / 2; //gets the dimensions of the gameLogo
-			y = (CashOut.getFrameHeight() - GALogo.getHeight(null)) / 2 - 400;
-			//g2d.drawImage(GALogo, x, y - menuCounter, null);
-			g2d.setColor(Color.decode("0x89C280"));
-			if (settingsExpanded) g2d.fillRoundRect(20, 700 + menuCounter, settings.getWidth(), 150, 25, 25);
-			g2d.drawImage(settings, 20, 800 + menuCounter, null);
-			if (settingsExpanded){ 
-				if (soundOn) g2d.drawImage(soundfx, 30, 715 + menuCounter, null);
-				else g2d.drawImage(soundfxOff, 30, 715 + menuCounter, null);
-				if (musicOn) g2d.drawImage(music, 33, 760 + menuCounter, null);
-				else g2d.drawImage(musicOff, 33, 760 + menuCounter, null);
+		if (!introDone){
+			if (introCounter < 500) introCounter += 2;
+			else if (introFadeCounter >= 2) introFadeCounter -= 2;
+			else{
+				menuCounter = 500;
+				reversed = true;
+				introDone = true;
 			}
+			g2d.setColor(new Color(65, 65, 65, introFadeCounter));
+			g2d.fillRect(0, 0, CashOut.getFrameWidth(), CashOut.getFrameHeight());
+			float alpha = (float) (1f - introCounter/500.0); //draw half transparent
+			AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,alpha);
+			g2d.setComposite(ac);
+			g2d.drawImage(GAPresents, (CashOut.getFrameWidth()/2) - (GAPresents.getWidth()/2), (CashOut.getFrameHeight()/2) - (GAPresents.getHeight()/2), null);
 		}
-
-		if (!main){
+		if (introDone){
 			Color grey = new Color(88, 89, 91, 220);
 			Color greyTrans = new Color(150, 150, 150, 127);
-			if (information){
+
+			if (win){
 				g2d.setColor(grey);
 				g2d.fillRoundRect(50, 50, 1100, 800, 25, 25);
-				g2d.setFont(CashOut.getFontMedium());
-				//g2d.setColor(Color.decode("0x89C280"));
-				g2d.setColor(Color.WHITE);
-				FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontMedium()); //used to calculate based on the measurements of the font
-				String s1 = "A notorious bank robber is on yet another hunt for cash.";
-				String s2 = "Help him retrieve the goods and make his grand escape !";
-				String s3 = "Be prepared to face the full extent of the law";
-				String s4 = "security cameras, police officers, and laser wires";
-				String s5 = "Will this be his last heist?";
-				String s6 = "It is up to you to make sure it isn’t.";
 
-				int stringLength = fontMetrics.stringWidth(s1); //horizontal length of String
-				int stringHeight = fontMetrics.stringWidth(s1);
-				g2d.drawString(s1, (CashOut.getFrameWidth()/2) - (stringLength/2)  , 125); 
-				g2d.drawString(s2, (CashOut.getFrameWidth()/2) - (stringLength/2)  , 175);
-				g2d.drawString(s3, (CashOut.getFrameWidth()/2) - (stringLength/2)  , 225);
-				g2d.setColor(Color.decode("0xd1d3d4"));
-				g2d.fillOval(895, 210, 6, 6);
-				g2d.fillOval(895, 220, 6, 6);
-				int stringLength2 = fontMetrics.stringWidth(s4); //horizontal length of String
-				g2d.setColor(Color.decode("0x990000"));
-				g2d.drawString(s4, (CashOut.getFrameWidth()/2) - (stringLength2/2) , 275);
+				g2d.setFont(CashOut.getFontHuge());
+				g2d.setColor(Color.decode("0x065C27"));
+				FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontHuge()); 
+				int stringLength = fontMetrics.stringWidth("YOU WIN");
+				g2d.drawString("YOU WIN", (CashOut.getFrameWidth()/2) - (stringLength/2), 375);
 				g2d.setFont(CashOut.getFontBig());
-				FontMetrics fontMetrics2 = g2d.getFontMetrics(CashOut.getFontBig());
-				stringLength2 = fontMetrics2.stringWidth(s5); //horizontal length of String
+				fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
+				stringLength = fontMetrics.stringWidth("Your Score");
+				g2d.drawString("Your Score", (CashOut.getFrameWidth()/2) - (stringLength/2), 470);
 				g2d.setColor(Color.white);
-
-				g2d.drawString(s5, (CashOut.getFrameWidth()/2) - (stringLength2/2) , 340);
-				stringLength2 = fontMetrics.stringWidth(s6);
 				g2d.setFont(CashOut.getFontMedium());
-				g2d.drawString(s6, (CashOut.getFrameWidth()/2) - (stringLength2/2), 390);
-				g2d.fillRect((CashOut.getFrameWidth()/2) - (960/2), 420, 940, 3);
-				g2d.drawImage(controls, (CashOut.getFrameWidth()/2) - (controls.getWidth()/2), 465, null);
-				int x = 275;
-				int y = 700;
-				g2d.drawImage(inv.getNoteImage(), x, y, null);
-				g2d.drawImage(level.getBagImage(), x + 70, y + 10, null);
-
-				g2d.setFont(CashOut.getFontSmall());
-				g2d.drawString("Collect", x + 30, y + 75);
-
-				g2d.setColor(Color.gray);
-				Image cameraSmall = camera.getScaledInstance(30, 26, Image.SCALE_DEFAULT);
-				g2d.drawImage(cameraSmall, x + 250, y + 20, null);
-				g2d.fillOval(x + 250 + 25, y + 20 - 5, 10, 10);
-				g2d.setColor(Color.white);
-				Image laser = level.getLaserImage().getScaledInstance(30, 7, Image.SCALE_DEFAULT);
-				g2d.drawImage(laser, x + 300, y + 30, null);
-
-				g2d.drawString("Hack", x + 300, y + 75);
-				g2d.fillOval(x + 350, y + 20, 20, 20);
-
-				g2d.drawString("Shoot", x + 570, y + 75);
-				Image officer = level.getOfficerImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT);
-				g2d.drawImage(officer, x + 555, y - 10, null);
+				fontMetrics = g2d.getFontMetrics(CashOut.getFontMedium()); 
+				stringLength = fontMetrics.stringWidth(String.valueOf(gameLevels.getCurrent().getScore()));
+				g2d.drawString(String.valueOf(gameLevels.getCurrent().getScore()), (CashOut.getFrameWidth()/2) - (stringLength/2), 530);
 			}
 
-			if (play){
-				g2d.drawImage(taxi, taxiX, 570, null);
-				g2d.drawImage(currentImg, taxiX - 100, 600, null);
-
-				if (taxiStopped){
-					g2d.setColor(grey);
-					g2d.fillRoundRect(50, 50, 1100, 800, 25, 25);
-					//new
-					g2d.setFont(CashOut.getFontBig());
-					g2d.setColor(Color.WHITE);
-					FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
-					int stringLength = fontMetrics.stringWidth("Level Select");
-					g2d.drawString("Level Select", (CashOut.getFrameWidth()/2) - (stringLength/2), 125);
-					g2d.setFont(CashOut.getFontMedium());
-					for (int i = 0; i < levels.length; i++){
-						g2d.setColor(greyTrans);
-						g2d.fillRoundRect(-45 + ((i+1)*200), 280, levelBag.getWidth(), 60, 5, 5);
-						if (!levels[i].isUnlocked()) g2d.drawImage(levelBagGray, -45 + ((i+1)*200), 175, null);
-						else g2d.drawImage(levelBag, -45 + ((i+1)*200), 175, null);
-						g2d.setColor(Color.WHITE);
-						g2d.drawString(String.valueOf(i+1), -5 + ((i+1)*200) , 275);
-					}
-					
-					g2d.setFont(CashOut.getFontHuge());
-					fontMetrics = g2d.getFontMetrics(CashOut.getFontHuge()); 
-					stringLength = fontMetrics.stringWidth("More levels coming soon!");
-					g2d.drawString("More levels coming soon!", (CashOut.getFrameWidth()/2) - (stringLength/2), 550);
-				}
-			}
-			
 			if (gameOver){
 				g2d.setColor(grey);
 				g2d.fillRoundRect(50, 50, 1100, 800, 25, 25);
-				
+
 				g2d.setFont(CashOut.getFontHuge());
 				g2d.setColor(Color.decode("0x990000")); //crimson
 
@@ -392,214 +401,535 @@ public class Menu {
 				g2d.drawString("GAME OVER", (CashOut.getFrameWidth()/2) - (stringLength/2), 375);
 				g2d.setFont(CashOut.getFontBig());
 				fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
+				g2d.setColor(Color.white);
 				stringLength = fontMetrics.stringWidth("Your Score");
 				g2d.drawString("Your Score", (CashOut.getFrameWidth()/2) - (stringLength/2), 470);
-				g2d.setColor(Color.white);
 				g2d.setFont(CashOut.getFontMedium());
 				fontMetrics = g2d.getFontMetrics(CashOut.getFontMedium()); 
-				stringLength = fontMetrics.stringWidth(String.valueOf(game.getScore()));
-				g2d.drawString(String.valueOf(game.getScore()), (CashOut.getFrameWidth()/2) - (stringLength/2), 530);
+				stringLength = fontMetrics.stringWidth(String.valueOf(gameLevels.getCurrent().getScore()));
+				g2d.drawString(String.valueOf(gameLevels.getCurrent().getScore()), (CashOut.getFrameWidth()/2) - (stringLength/2), 530);
+				g2d.drawImage(retry, (CashOut.getFrameWidth()/2) - (retry.getWidth()/2), 600, null);
 			}
 
-			if ((taxiStopped && !taxiGone) || information || scores || gameOver) g2d.drawImage(back, 10, 700, null);
+			else if (main){
+				int x = (CashOut.getFrameWidth() - buttons.getWidth()) / 2; //gets the dimensions of the buttons
+				int y = (CashOut.getFrameHeight() - buttons.getHeight(null)) / 2 + 275;
+				g2d.drawImage(buttons, x, y + menuCounter, null);
+				x = (CashOut.getFrameWidth() - gameLogo.getWidth()) / 2; //gets the dimensions of the gameLogo
+				y = (CashOut.getFrameHeight() - gameLogo.getHeight(null)) / 2 - 200;
+				g2d.drawImage(gameLogo, x, y - menuCounter, null);
+				x = (CashOut.getFrameWidth() - GALogo.getWidth()) / 2; //gets the dimensions of the gameLogo
+				y = (CashOut.getFrameHeight() - GALogo.getHeight(null)) / 2 - 400;
+				//g2d.drawImage(GALogo, x, y - menuCounter, null);
+				g2d.setColor(Color.decode("0x89C280"));
+				if (settingsExpanded) g2d.fillRoundRect(20, 700 + menuCounter, settings.getWidth(), 150, 25, 25);
+				g2d.drawImage(settings, 20, 800 + menuCounter, null);
+				if (settingsExpanded){ 
+					if (soundOn) g2d.drawImage(soundfx, 30, 715 + menuCounter, null);
+					else g2d.drawImage(soundfxOff, 30, 715 + menuCounter, null);
+					if (musicOn) g2d.drawImage(music, 33, 760 + menuCounter, null);
+					else g2d.drawImage(musicOff, 33, 760 + menuCounter, null);
+				}
+			}
 
-		}
-		if (taxiGone && !gameOver){
+			if (!main){
+
+				if (information){
+
+					g2d.setColor(grey);
+					g2d.fillRoundRect(50, 50, 1100, 800, 25, 25);
+					if (extraInformation == 0){
+						g2d.setFont(CashOut.getFontMedium());
+						//g2d.setColor(Color.decode("0x89C280"));
+						g2d.setColor(Color.WHITE);
+						FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontMedium()); //used to calculate based on the measurements of the font
+						String s1 = "A notorious bank robber is on yet another hunt for cash.";
+						String s2 = "Help him retrieve the goods and make his grand escape !";
+						String s3 = "Be prepared to face the full extent of the law";
+						String s4 = "security cameras, police officers, and laser wires";
+						String s5 = "Will this be his last heist?";
+						String s6 = "It is up to you to make sure it isn’t.";
+
+						int stringLength = fontMetrics.stringWidth(s1); //horizontal length of String
+						g2d.drawString(s1, (CashOut.getFrameWidth()/2) - (stringLength/2)  , 125); 
+						g2d.drawString(s2, (CashOut.getFrameWidth()/2) - (stringLength/2)  , 175);
+						g2d.drawString(s3, (CashOut.getFrameWidth()/2) - (stringLength/2)  , 225);
+						g2d.setColor(Color.decode("0xd1d3d4"));
+						g2d.fillOval(895, 210, 6, 6);
+						g2d.fillOval(895, 220, 6, 6);
+						int stringLength2 = fontMetrics.stringWidth(s4); //horizontal length of String
+						g2d.setColor(Color.decode("0x990000"));
+						g2d.drawString(s4, (CashOut.getFrameWidth()/2) - (stringLength2/2) , 275);
+						g2d.setFont(CashOut.getFontBig());
+						FontMetrics fontMetrics2 = g2d.getFontMetrics(CashOut.getFontBig());
+						stringLength2 = fontMetrics2.stringWidth(s5); //horizontal length of String
+						g2d.setColor(Color.white);
+
+						g2d.drawString(s5, (CashOut.getFrameWidth()/2) - (stringLength2/2) , 340);
+						stringLength2 = fontMetrics.stringWidth(s6);
+						g2d.setFont(CashOut.getFontMedium());
+						g2d.drawString(s6, (CashOut.getFrameWidth()/2) - (stringLength2/2), 390);
+						g2d.fillRect((CashOut.getFrameWidth()/2) - (960/2), 420, 940, 3);
+						g2d.drawImage(controls, (CashOut.getFrameWidth()/2) - (controls.getWidth()/2), 465, null);
+						int x = 275;
+						int y = 700;
+						g2d.drawImage(inv.getNoteImage(), x, y, null);
+						g2d.drawImage(moneyBag, x + 70, y + 10, null);
+
+						g2d.setFont(CashOut.getFontSmall());
+						g2d.drawString("Collect", x + 30, y + 75);
+
+						g2d.setColor(Color.gray);
+						g2d.drawImage(cameraSmall, x + 240, y + 20, null);
+						g2d.fillOval(x + 240 + 25, y + 20 - 5, 10, 10);
+						g2d.setColor(Color.white);
+						g2d.drawImage(l, x + 300, y + 30 - l.getHeight(null)/2, null);
+
+						g2d.drawString("Hack", x + 300, y + 75);
+
+						g2d.drawImage(v, x + 360, y + 20 - 10, null);
+
+						g2d.drawString("Shoot", x + 570, y + 75);
+
+						g2d.drawImage(o, x + 555, y - 10, null);
+						int[] xPoints = {1090, 1090, 1130};
+						int[] yPoints = {390, 470, 430};
+						Polygon right = new Polygon(xPoints, yPoints, xPoints.length);
+						g2d.setColor(greyTrans);
+						g2d.fill(right);
+					}
+					if (extraInformation == 1){
+						int[] xPoints = {120, 120, 80}; //left
+						int[] yPoints = {390, 470, 430};
+						Polygon left = new Polygon(xPoints, yPoints, xPoints.length);
+						g2d.setColor(greyTrans);
+						g2d.fill(left);
+
+						int[] xPoints2 = {1090, 1090, 1130}; //right
+						int[] yPoints2 = {390, 470, 430};
+						Polygon right = new Polygon(xPoints2, yPoints2, xPoints2.length);
+						g2d.setColor(greyTrans);
+						g2d.fill(right);
+
+						g2d.setFont(CashOut.getFontBig());
+						g2d.setColor(Color.WHITE);
+						FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
+						int stringLength = fontMetrics.stringWidth("HACKING");
+						g2d.drawString("HACKING", (CashOut.getFrameWidth()/2) - (stringLength/2), 125);
+						g2d.setFont(CashOut.getFontMedium());
+						g2d.drawString("Camera", 300, 200);
+						g2d.drawString("Laser", 800, 200);
+
+						g2d.setFont(CashOut.getCashFont().deriveFont(Font.PLAIN, 20));
+						fontMetrics = g2d.getFontMetrics(CashOut.getCashFont().deriveFont(Font.PLAIN, 20)); 
+
+						g2d.drawImage(camera, 300, 250, null);
+						g2d.drawImage(cameraHolder, 400, 230, null);
+						g2d.drawImage(picturePuzzle, 210, 430, null);
+						g2d.drawString("Rearrange the pieces by clicking", 170, 625);
+						g2d.drawString("two boxes to swap them", 215, 655);
+
+
+						g2d.drawImage(laser, 765, 200, null);
+						g2d.drawImage(mazePuzzleSmall, 715, 340, null);
+						g2d.drawString("Reach the middle without", 700, 625);
+						g2d.drawString("touching the sides", 745, 655);
+
+						g2d.setColor(Color.yellow);
+						stringLength = fontMetrics.stringWidth("Go near each device and press X");
+						g2d.drawString("Go near each device and press X", (CashOut.getFrameWidth()/2) - (stringLength/2), 760);
+						g2d.setColor(Color.white);
+						stringLength = fontMetrics.stringWidth("Puzzles will be shown and will deactivate the device once solved");
+						g2d.drawString("Puzzles will be shown and will deactivate the device once solved", (CashOut.getFrameWidth()/2) - (stringLength/2), 800);
+
+					}
+
+					if (extraInformation == 2){
+						int[] xPoints = {120, 120, 80}; //left
+						int[] yPoints = {390, 470, 430};
+						Polygon left = new Polygon(xPoints, yPoints, xPoints.length);
+						g2d.setColor(greyTrans);
+						g2d.fill(left);
+
+						int[] xPoints2 = {1090, 1090, 1130}; //right
+						int[] yPoints2 = {390, 470, 430};
+						Polygon right = new Polygon(xPoints2, yPoints2, xPoints2.length);
+						g2d.setColor(greyTrans);
+						g2d.fill(right);
+
+						g2d.setFont(CashOut.getFontBig());
+						g2d.setColor(Color.WHITE);
+						FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
+						int stringLength = fontMetrics.stringWidth("OFFICERS");
+						g2d.drawString("OFFICERS", (CashOut.getFrameWidth()/2) - (stringLength/2), 125);
+						g2d.drawImage(officer, (CashOut.getFrameWidth()/2) - (officer.getHeight()/2), 160, null);
+
+						g2d.setFont(CashOut.getFontMedium());
+						fontMetrics = g2d.getFontMetrics(CashOut.getFontMedium());
+						stringLength = fontMetrics.stringWidth("Avoid the Officers");
+						g2d.drawString("Avoid the Officers", (CashOut.getFrameWidth()/2) - (stringLength/2), 300);
+						g2d.setColor(Color.yellow);
+						stringLength = fontMetrics.stringWidth("line of sight");
+						g2d.drawString("line of sight", (CashOut.getFrameWidth()/2) - (stringLength/2), 335);
+
+						g2d.setColor(Color.WHITE);
+						stringLength = fontMetrics.stringWidth("Shoot them to avoid getting caught");
+						g2d.drawString("Shoot them to avoid getting caught", (CashOut.getFrameWidth()/2) - (stringLength/2), 400);
+
+						g2d.setFont(CashOut.getFontBig());
+						g2d.setColor(Color.WHITE);
+						fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
+						stringLength = fontMetrics.stringWidth("SUSPICION");
+						g2d.drawString("SUSPICION", (CashOut.getFrameWidth()/2) - (stringLength/2), 500);
+
+						g2d.drawImage(suspicion, 450, 550, null);
+						g2d.setColor(greyTrans);
+						g2d.fillRect(450 + suspicion.getWidth() + 20, 550, 200, 50);
+						Color yellowTrans = new Color(255, 255, 0, 200);
+						g2d.setColor(yellowTrans);
+						g2d.fillRect(450 + suspicion.getWidth() + 20, 550, 75, 50);
+						g2d.setColor(Color.WHITE);
+						g2d.setFont(CashOut.getFontMedium());
+						fontMetrics = g2d.getFontMetrics(CashOut.getFontMedium());
+						stringLength = fontMetrics.stringWidth("Failing puzzles or being seen");
+						g2d.drawString("Failing puzzles or being seen", (CashOut.getFrameWidth()/2) - (stringLength/2), 680);
+						stringLength = fontMetrics.stringWidth("increases your suspicion level.");
+						g2d.drawString("increases your suspicion level.", (CashOut.getFrameWidth()/2) - (stringLength/2), 710);
+						g2d.setColor(Color.yellow);
+						stringLength = fontMetrics.stringWidth("You are caught if you");
+						g2d.drawString("You are caught if you", (CashOut.getFrameWidth()/2) - (stringLength/2), 760);
+						stringLength = fontMetrics.stringWidth("exceed the maximum suspicion");
+						g2d.drawString("exceed the maximum suspicion", (CashOut.getFrameWidth()/2) - (stringLength/2), 790);
+					}
+
+					if (extraInformation == 3){
+						int[] xPoints = {120, 120, 80}; //left
+						int[] yPoints = {390, 470, 430};
+						Polygon left = new Polygon(xPoints, yPoints, xPoints.length);
+						g2d.setColor(greyTrans);
+						g2d.fill(left);
+
+						int[] xPoints2 = {1090, 1090, 1130}; //right
+						int[] yPoints2 = {390, 470, 430};
+						Polygon right = new Polygon(xPoints2, yPoints2, xPoints2.length);
+						g2d.setColor(greyTrans);
+						g2d.fill(right);
+
+						g2d.setFont(CashOut.getFontBig());
+						g2d.setColor(Color.WHITE);
+						FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
+						int stringLength = fontMetrics.stringWidth("FINISHING EACH LEVEL");
+						g2d.drawString("FINISHING EACH LEVEL", (CashOut.getFrameWidth()/2) - (stringLength/2), 125);
+						g2d.drawImage(vault, (CashOut.getFrameWidth()/2) - (vault.getHeight()/2), 130, null);
+
+						g2d.drawImage(inv.getNoteImage(), (CashOut.getFrameWidth()/2) - (inv.getNoteImage().getHeight()/2) - 175, 240, null);
+						g2d.setFont(CashOut.getFontMedium());
+						g2d.setColor(Color.YELLOW);
+						g2d.drawString("Collect all 4 notes", 475, 270);
+						g2d.setColor(Color.WHITE);
+						g2d.drawString("to hack the vault", 490, 295);
+
+						g2d.drawImage(vaultPuzzle, (CashOut.getFrameWidth()/2) - (vaultPuzzle.getWidth()/2), (CashOut.getFrameHeight()/2) - (vaultPuzzle.getHeight()/2) + 100, null);
+						g2d.setFont(CashOut.getCashFont().deriveFont(Font.PLAIN, 20));
+						fontMetrics = g2d.getFontMetrics(CashOut.getCashFont().deriveFont(Font.PLAIN, 20)); 
+						stringLength = fontMetrics.stringWidth("Drag the notes into each slot correctly");
+						g2d.drawString("Drag the notes into each slot correctly", (CashOut.getFrameWidth()/2) - (stringLength/2), 800);
+
+					}
+
+					if (extraInformation == 4){
+						int[] xPoints = {120, 120, 80}; //left
+						int[] yPoints = {390, 470, 430};
+						Polygon left = new Polygon(xPoints, yPoints, xPoints.length);
+						g2d.setColor(greyTrans);
+						g2d.fill(left);
+						g2d.setFont(CashOut.getFontBig());
+						g2d.setColor(Color.WHITE);
+						FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
+						int stringLength = fontMetrics.stringWidth("SCORE");
+						g2d.drawString("SCORE", (CashOut.getFrameWidth()/2) - (stringLength/2), 125);
+						g2d.drawImage(moneyBagHuge, (CashOut.getFrameWidth()/2) - (moneyBagHuge.getWidth()/2), 200, null);
+						g2d.setFont(CashOut.getFontMedium());
+						fontMetrics = g2d.getFontMetrics(CashOut.getFontMedium()); 
+						stringLength = fontMetrics.stringWidth("Collect money bags to get the");
+						g2d.drawString("Collect money bags to get the", (CashOut.getFrameWidth()/2) - (stringLength/2), 500);
+						stringLength = fontMetrics.stringWidth("most score per level");
+						g2d.drawString("most score per level", (CashOut.getFrameWidth()/2) - (stringLength/2), 525);
+						g2d.setFont(CashOut.getFontHuge());
+						fontMetrics = g2d.getFontMetrics(CashOut.getFontHuge()); 
+						stringLength = fontMetrics.stringWidth("HAVE FUN!");
+						g2d.drawString("HAVE FUN!", (CashOut.getFrameWidth()/2) - (stringLength/2), 675);
+					}
+				}
+
+				if (play){
+					g2d.drawImage(taxi, taxiX, 570, null);
+					g2d.drawImage(currentImg, taxiX - 100, 600, null);
+
+					if (taxiStopped){
+						g2d.setColor(grey);
+						g2d.fillRoundRect(50, 50, 1100, 800, 25, 25);
+						//new
+						g2d.setFont(CashOut.getFontBig());
+						g2d.setColor(Color.WHITE);
+						FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontBig()); 
+						int stringLength = fontMetrics.stringWidth("Level Select");
+						g2d.drawString("Level Select", (CashOut.getFrameWidth()/2) - (stringLength/2), 125);
+
+						for (int i = 0; i < levels.length; i++){
+							g2d.setColor(greyTrans);
+							g2d.fillRoundRect(-45 + ((i+1)*200), 280, levelBag.getWidth(), 60, 5, 5);
+							if (!levels[i].isUnlocked()) g2d.drawImage(levelBagGray, -45 + ((i+1)*200), 175, null);
+							else g2d.drawImage(levelBag, -45 + ((i+1)*200), 175, null);
+							g2d.setColor(Color.WHITE);
+							g2d.setFont(CashOut.getFontMedium());
+							g2d.drawString(String.valueOf(i+1), -5 + ((i+1)*200) , 275);
+							g2d.setFont(CashOut.getCashFont().deriveFont(Font.PLAIN, 17));
+							fontMetrics = g2d.getFontMetrics(CashOut.getCashFont().deriveFont(Font.PLAIN, 17));
+							stringLength = fontMetrics.stringWidth(String.valueOf(levels[i].getHighScore()));
+							if (levels[i].getHighScore() > 0) g2d.drawString(String.valueOf(levels[i].getHighScore()), -30 + stringLength/2 + ((i+1)*200), 330);
+						}
+
+						g2d.setFont(CashOut.getFontHuge());
+						fontMetrics = g2d.getFontMetrics(CashOut.getFontHuge()); 
+						stringLength = fontMetrics.stringWidth("More levels coming soon!");
+						g2d.drawString("More levels coming soon!", (CashOut.getFrameWidth()/2) - (stringLength/2), 550);
+					}
+				}
+
+			}
+
+			if ( ((taxiStopped && !taxiGone) || information || win) && menuCounter == 500) g2d.drawImage(back, 10, 700, null);
+
 			Color color = new Color(0, 0, 0, fadeOut);
-			if (fadeOut < 255) fadeOut += 3;
 			g2d.setColor(color);
 			g2d.fillRect(0, 0, CashOut.getFrameWidth(), CashOut.getFrameHeight());
-			if (fadeOut == 255){
-				menuExit = true;
-			}
+
 		}
 
-		update();
 	}
 
-	public void update(){
-		gameOver = game.getGameOver();
-		if (cloudCounter > 1200*2) cloudCounter = 0;
-		else cloudCounter += 0.5;
-		/*if (settingsExpanded && settingsCounter < 150){
+
+
+	public void update(CashOut c){
+		if (!menuExit){
+			gameOver = c.getGameOver();
+			win = c.getWin();
+			soundOn = c.getSoundState();
+			if (cloudCounter > 1200*2) cloudCounter = 0;
+			else cloudCounter += 0.5;
+			/*if (settingsExpanded && settingsCounter < 150){
 			settingsCounter++;
 		}
-		 */
-
-		if (reversed){
-			if (menuCounter >= 0) menuCounter -= 5;
-			if (menuCounter == 0) reversed = false;
-		}
-
-		if (play || information || scores){
-			if (menuCounter < 500) menuCounter+=5; 
-			else{
-				main = false;
-				//menuCounter =  0;
+			 */
+			if ((gameOver || win) && !reset){
+				fadeOut = 0;
 			}
-		}
+			if (taxiGone || reset){
+				if (fadeOut < 255) fadeOut += 3;
+			}
 
-
-		if (car1Stopped && car2Stopped){
-			stopTraffic();
-			if (!levelSelected){
-				if (taxiX > 320 && taxiX < 450){
-					if (!playedScreech && soundOn) playTires();
-					taxiX+= 2;
+			if (fadeOut == 255){
+				if (reset) {
+					c.retry();
+					reset = false;
 				}
-				else if (taxiX >= 450){
-					taxiStopped  = true;
+				menuExit = true;
+			}
+
+			if (reversed){
+				if (menuCounter >= 0) menuCounter -= 5;
+				if (menuCounter == 0) reversed = false;
+			}
+
+			if (play || information){
+				if (menuCounter < 500) menuCounter+=5; 
+				else{
+					main = false;
+					//menuCounter =  0;
 				}
-				else taxiX += 5;
 			}
-			else {
-				if (taxiX < 1200 + 300){
-					taxiX += 5;
-					taxiStopped = false;
+
+
+			if (car1Stopped && car2Stopped){
+				stopTraffic();
+				if (!levelSelected){
+					if (taxiX > 320 && taxiX < 450){
+						if (!playedScreech && soundOn) playTires();
+						taxiX+= 2;
+					}
+					else if (taxiX >= 450){
+						taxiStopped  = true;
+					}
+					else taxiX += 5;
 				}
-				else taxiGone = true;
+				else {
+					if (taxiX < 1200 + 300){
+						taxiX += 5;
+						taxiStopped = false;
+					}
+					else taxiGone = true;
+				}
 			}
-		}
 
 
 
-		if (!car1Stopped){
-			if (car1x < 1600) car1x+=5;
-			else{
-				car1x = -300;
-				if (play) car1Stopped = true;
+			if (!car1Stopped){
+				if (car1x < 1600) car1x+=5;
+				else{
+					car1x = -300;
+					if (play) car1Stopped = true;
+				}
 			}
-		}
-		if (!car2Stopped){
-			if (car2x > -1000) car2x-=8;
-			else{
-				car2x = CashOut.getFrameWidth() + 300;
-				if (play) car2Stopped = true;
+			if (!car2Stopped){
+				if (car2x > -1000) car2x-=8;
+				else{
+					car2x = CashOut.getFrameWidth() + 300;
+					if (play) car2Stopped = true;
+				}
 			}
+
+			if (smokeCounter < 60){
+				smokeCounter++;
+			}
+			else smokeCounter = 0;
+
+			if (smokeCounter < 20) frame = 0;
+			else if (smokeCounter < 40) frame = 1;
+			else if (smokeCounter < 60) frame = 2;
+			currentImg = exhaust[frame];
+
+			if (planeX < -300) planeX = 2400;
+
+			planeX -= 1;
 		}
-
-		if (smokeCounter < 60){
-			smokeCounter++;
-		}
-		else smokeCounter = 0;
-
-		if (smokeCounter < 20) frame = 0;
-		else if (smokeCounter < 40) frame = 1;
-		else if (smokeCounter < 60) frame = 2;
-		currentImg = exhaust[frame];
-
-		if (planeX < -300) planeX = 2400;
-
-		planeX -= 1;
 
 	}
 
 	public void mouseClicked(MouseEvent e, CashOut c) {
 		//System.out.println(e.getX() + ", " + e.getY());
-		if (main){
-			if (e.getX() > 21 && e.getX() < 21 + settings.getWidth() && e.getY() > 800 && e.getY() < 800 + settings.getHeight()){
-				settingsExpanded = !settingsExpanded;
-			}
-
-			if (e.getX() > 30 && e.getX() < 30 + music.getWidth() && e.getY() > 760 && e.getY() < 760 + music.getHeight()){
-				musicOn = !musicOn;
-				game.setMusic(musicOn);
-			}
-
-			if (e.getX() > 30 && e.getX() < 30 + soundfx.getWidth() && e.getY() > 715 && e.getY() < 715 + soundfx.getHeight()){
-				soundOn = !soundOn;
-				game.setSound(soundOn);
-				System.out.println("SOUND OFF");
-				stopStartSound();
-			}
-
-			if (e.getX() > 217 && e.getX() < 217 + buttons.getWidth() && e.getY() > 645 && e.getY() < 647 + buttons.getHeight()){ //all buttons
-				if (e.getX() > 217 && e.getX() < 217 + 124){
-					information = true;
-				}
-				if (e.getX() > 538 && e.getX() < 538 + 124){
-					play = true;
-				}
-				if (e.getX() > 858 && e.getX() < 858 + 124){
-					scores = true;
-				}
-			}
-
-		}
-
-
-		if (play && taxiStopped){
-			if (e.getY() > 175 && e.getY() < 175 + levelBag.getHeight()){
-				if (e.getX() > 155 && e.getX() < 155 + levelBag.getWidth()){
-					gameLevels.setCurrent(0);
-					levelSelected = true;
-				}
-				
-				else if (e.getX() > 355 && e.getX() < 355 + levelBag.getWidth()){
-					if(levels[1].isUnlocked()){
-						gameLevels.setCurrent(1);
-						levelSelected = true;
-					}
-				}
-				
-				else if (e.getX() > 555 && e.getX() < 555 + levelBag.getWidth()){
-					if(levels[2].isUnlocked()){
-						gameLevels.setCurrent(2);
-						levelSelected = true;
-
-					}
-				}
-				
-				else if (e.getX() > 755 && e.getX() < 755 + levelBag.getWidth()){
-					if(levels[3].isUnlocked()){
-						gameLevels.setCurrent(3);
-						levelSelected = true;
-
-					}
-				}
-				else if (e.getX() > 955 && e.getX() < 955 + levelBag.getWidth()){
-					if(levels[4].isUnlocked()) {
-						gameLevels.setCurrent(4);
-						levelSelected = true;
-
-					}
-				} 
-			}
-		}
-
-
-		if (e.getX() > 10 && e.getX() < 10 + back.getWidth() && e.getY() > 700 && e.getY() < 700 + back.getHeight()){
-			if (information){
-				information = false;
-				main = true;
-				reversed = true;
-				//menuCounter = 0;
-			}
-			if (play){
-				play = false;
-				main = true;
-				//menuCounter = 0;
-				reversed = true;
-				car1Stopped = false;
-				car2Stopped = false;
-				taxiX = -300;
-				taxiStopped = false;
-				playedScreech = false;
-				playTraffic();
-			}
-			if (scores){
-				scores = false;
-				reversed = true;
-				//menuCounter = 0;
-				main = true;
-
-			}
-			
+		if (!menuExit && introDone){
 			if (gameOver){
-				gameOver = false;
-				menuCounter = 500;
-				reversed = true;
-				main = true;
+				if (e.getX() > 538 && e.getX() < 538 + retry.getWidth() && e.getY() > 600 && e.getY() < 600 + retry.getHeight()){
+					gameOver = false;
+					c.setGameOver(gameOver);
+					c.setWin(win);
+					reset = true;
+				}
+			}
+			else if (main){
+				if (e.getX() > 21 && e.getX() < 21 + settings.getWidth() && e.getY() > 800 && e.getY() < 800 + settings.getHeight()){
+					settingsExpanded = !settingsExpanded;
+				}
+
+				if (e.getX() > 30 && e.getX() < 30 + music.getWidth() && e.getY() > 760 && e.getY() < 760 + music.getHeight()){
+					musicOn = !musicOn;
+					game.setMusic(musicOn);
+				}
+
+				if (e.getX() > 30 && e.getX() < 30 + soundfx.getWidth() && e.getY() > 715 && e.getY() < 715 + soundfx.getHeight()){
+					soundOn = !soundOn;
+					game.setSound(soundOn);
+					stopStartSound();
+				}
+
+				if (e.getX() > 217 && e.getX() < 376 + buttons.getWidth() && e.getY() > 645 && e.getY() < 645 + buttons.getHeight()){ //all buttons
+					if (e.getX() > 376 && e.getX() < 376 + 124){
+						information = true;
+						settingsExpanded = false;
+					}
+					if (e.getX() > 698 && e.getX() < 698 + 124){
+						play = true;
+						settingsExpanded = false;
+					}
+
+				}
+
+			}
+
+			if (information){
+				if (e.getX() > 1090 && e.getX() < 1130 && e.getY() > 390 && e.getY() < 470){ //right
+					if (extraInformation < 4) extraInformation++;
+				}
+
+				if (e.getX() > 80 && e.getX() < 120 && e.getY() > 390 && e.getY() < 470){ //left
+					if (extraInformation > 0) extraInformation--;
+				}
+
+			}
+			if (play && taxiStopped){
+				if (e.getY() > 175 && e.getY() < 175 + levelBag.getHeight()){
+					if (e.getX() > 155 && e.getX() < 155 + levelBag.getWidth()){
+						gameLevels.setCurrent(0, c.getPlayer());
+						levelSelected = true;
+					}
+
+					else if (e.getX() > 355 && e.getX() < 355 + levelBag.getWidth()){
+						if(levels[1].isUnlocked()){
+							gameLevels.setCurrent(1, c.getPlayer());
+							levelSelected = true;
+						}
+					}
+
+					else if (e.getX() > 555 && e.getX() < 555 + levelBag.getWidth()){
+						if(levels[2].isUnlocked()){
+							gameLevels.setCurrent(2, c.getPlayer());
+							levelSelected = true;
+
+						}
+					}
+
+					else if (e.getX() > 755 && e.getX() < 755 + levelBag.getWidth()){
+						if(levels[3].isUnlocked()){
+							gameLevels.setCurrent(3, c.getPlayer());
+							levelSelected = true;
+
+						}
+					}
+					else if (e.getX() > 955 && e.getX() < 955 + levelBag.getWidth()){
+						if(levels[4].isUnlocked()) {
+							gameLevels.setCurrent(4, c.getPlayer());
+							levelSelected = true;
+
+						}
+					} 
+				}
+			}
+
+
+			if (e.getX() > 10 && e.getX() < 10 + back.getWidth() && e.getY() > 700 && e.getY() < 700 + back.getHeight()){
+				if (information){
+					information = false;
+					extraInformation = 0;
+					main = true;
+					reversed = true;
+					//menuCounter = 0;
+				}
+				if (play){
+					play = false;
+					main = true;
+					//menuCounter = 0;
+					reversed = true;
+					car1Stopped = false;
+					car2Stopped = false;
+					taxiX = -300;
+					taxiStopped = false;
+					playedScreech = false;
+					if (game.getSoundState()) playTraffic();
+				}
+
+				if (win){
+					main = true;
+					information = false;
+					play = false;
+					menuCounter = 500;
+					reversed = true;
+					gameOver = false;
+					win = false;
+					c.setGameOver(gameOver);
+					c.retry();
+					reset();
+				}
 			}
 		}
 	}
@@ -623,7 +953,6 @@ public class Menu {
 				}
 			}
 		}).start();
-		System.out.println("Start Traffic");
 	}
 
 	public synchronized void playTires() { //plays the pop sound effect
@@ -656,8 +985,7 @@ public class Menu {
 		if (soundOn){
 			startTraffic();
 		}
-		
-		System.out.println("Stop Start Sound");
+
 	}
 
 	public BufferedImage getSettingsMenu(){
@@ -684,7 +1012,35 @@ public class Menu {
 		gameLevels = l;
 		levels = gameLevels.getLevels();
 	}
-	
+
+	public void reset(){
+		play = false;
+		information = false;
+		main = true;
+		menuCounter = 500;
+		reversed = true;
+		taxiGone = false;
+		playedScreech = false;
+		fadeOut = 0;
+		menuExit = false;
+		reset = false;
+		car1x = -300;
+		car2x = CashOut.getFrameWidth() + 300;
+		cloudCounter = 0;
+		settingsExpanded = false;
+		levelSelected = false;
+		reversed = true;
+		planeX = 1500;
+		taxiX = -300;
+		car1Stopped = false;
+		car2Stopped = false;
+		playedScreech = false;
+		taxiStopped = false;
+		taxiGone = false;
+		menuExit = false;
+		gameOver = false;
+		win = false;
+	}
 
 }
 

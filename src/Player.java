@@ -1,8 +1,8 @@
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -21,6 +21,9 @@ public class Player {
 	private double y;
 	private int height;
 	private int width;
+	private double hitboxX;
+	private double hitboxY;
+	private int frameTime = 0;
 
 	private double gunX;
 	private double gunY;
@@ -30,17 +33,19 @@ public class Player {
 
 	private BufferedImage[] sprites = new BufferedImage[13];
 	private BufferedImage currentImg;
-	private int frame;
 	private double angle = 0;
 	private Point gun = new Point((int) x + width - 5, (int) y);
 
 	private ArrayList<Bullet> nb = new ArrayList<Bullet>(9); 
 	private AffineTransformOp op;
 	private CashOut game;
+	private Rectangle hitbox;
 
 	private double pointY2;
 
 	private double pointX2;
+
+	private Shape transformed;
 
 	public Player(CashOut c){
 		try { 
@@ -53,8 +58,6 @@ public class Player {
 			sprites[i] = grabImage(1, i+1, 100);
 		}
 		currentImg = sprites[0];
-		x = 425;
-		y = 775;
 		width = currentImg.getWidth();
 		height = currentImg.getHeight();
 
@@ -65,6 +68,10 @@ public class Player {
 		pointX2 = x + width/2;
 		pointY2 = y + height - 20;
 		game = c;
+		hitbox = new Rectangle((int) x, (int) y + 20, currentImg.getWidth(), currentImg.getHeight()/2 + 20);
+		hitboxX = x;
+		hitboxY = y + 20;
+		transformed = hitbox;
 	}
 
 	public BufferedImage grabImage(int col, int row, int length){
@@ -94,7 +101,7 @@ public class Player {
 			nb.get(i).move();//moves the bullets
 			nb.get(i).paint(g2d);
 		}
-
+		g2d.setColor(Color.white);
 		// Drawing the rotated image at the required drawing locations
 		if(op!=null) g2d.drawImage(op.filter(currentImg, null), (int)x, (int)y, null);
 		else g2d.drawImage(currentImg, (int)x, (int)y, null);
@@ -102,7 +109,9 @@ public class Player {
 	}
 
 	public void update(){
-		currentImg = sprites[frame];
+		currentImg = sprites[(int) Math.floor(frameTime / 5)];
+		hitbox.x = (int) hitboxX;
+		hitbox.y = (int) hitboxY;
 	}
 
 	public void move(double xM, double yM, Levels levels){
@@ -112,29 +121,39 @@ public class Player {
 		int tempX2 = (int) pointX2;
 		int tempY2 = (int) pointY2;
 
-		if (yM == 5){ //down key
-			xM = -5;
+		if (yM == 1){ //down key
+			xM = -1;
 			tempX2 += xM * Math.sin(Math.toRadians(angle));
 			tempY2 += yM * Math.cos(Math.toRadians(angle));
-			if (!levels.getCurrent().hit(tempX2, tempY2)){
+			Rectangle tempHitbox = hitbox;
+			tempHitbox.x += xM * Math.sin(Math.toRadians(angle));
+			tempHitbox.y += yM * Math.cos(Math.toRadians(angle));
+			if (!levels.getCurrent().hit(tempHitbox) && tempX2 < 1200 && tempX2 > 0 && tempY2 < 900 && tempY2 > 0){
 				x += xM * Math.sin(Math.toRadians(angle));
 				y += yM * Math.cos(Math.toRadians(angle));
+				hitboxX += xM * Math.sin(Math.toRadians(angle));
+				hitboxY += yM * Math.cos(Math.toRadians(angle));				
 			}
 		}
 		else{ //up key
-			xM = 5;
+			xM = 1;
 			tempX += xM * Math.sin(Math.toRadians(angle));
 			tempY += yM * Math.cos(Math.toRadians(angle));
-			if (!levels.getCurrent().hit(tempX, tempY)){
+			Rectangle tempHitbox = hitbox;
+			tempHitbox.x += xM * Math.sin(Math.toRadians(angle));
+			tempHitbox.y += yM * Math.cos(Math.toRadians(angle));
+			if (!levels.getCurrent().hit(tempHitbox) && tempX < 1200 && tempX > 0 && tempY < 900 && tempY > 0){
 				x += xM * Math.sin(Math.toRadians(angle));
 				y += yM * Math.cos(Math.toRadians(angle));
+				hitboxX += xM * Math.sin(Math.toRadians(angle));
+				hitboxY += yM * Math.cos(Math.toRadians(angle));
 			}
 		}
 
-		if (frame < 12){
-			frame++;
+		if (frameTime < 60){
+			frameTime++;
 		}
-		else frame = 0;
+		else frameTime = 0;
 		turn(0);
 	}
 
@@ -152,7 +171,7 @@ public class Player {
 		tx.transform(pt1, pt2);
 		gunX=(int)x+pt2.x; 
 		gunY=(int)y+pt2.y;
-		
+
 		if (this.angle == 360){
 			this.angle = 0;
 		}
@@ -172,7 +191,12 @@ public class Player {
 		Point pt6=new Point();
 		tx.transform(pt5, pt6);
 		pointX2 = (int)x+pt6.x;
-		pointY2= (int)y+pt6.y;	    
+		pointY2= (int)y+pt6.y;
+
+		AffineTransform transform = new AffineTransform();
+		transform.rotate(Math.toRadians(this.angle), hitbox.x + hitbox.getWidth()/2, hitbox.y + hitbox.getHeight()/2);
+		transformed = transform.createTransformedShape(hitbox);
+
 	}
 
 	public int getX() {
@@ -181,6 +205,22 @@ public class Player {
 
 	public int getY(){
 		return (int) y;
+	}
+
+	public void setXY(int newX, int newY, int a) {
+		x = newX;
+		y = newY;
+		angle = a;
+		gunX = (int) x + width - 15;
+		gunY = (int) y;
+		pointX = x + width/2;
+		pointY = y + 20;
+		pointX2 = x + width/2;
+		pointY2 = y + height - 20;
+		hitbox = new Rectangle((int) x, (int) y + 20, currentImg.getWidth(), currentImg.getHeight()/2 + 20);
+		hitboxX = x;
+		hitboxY = y + 20;
+		transformed = hitbox;
 	}
 
 	public int getGunX() {
@@ -199,7 +239,7 @@ public class Player {
 		return width;
 	}
 
-	public synchronized void playGunshot() { //plays the pop sound effect
+	public synchronized void playGunshot() { //plays the gunshot sound effect
 		try {
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
 					this.getClass().getResource("/Audio/gunshot.wav"));
@@ -212,7 +252,7 @@ public class Player {
 		}
 	}
 
-	public synchronized void playDryFire() { //plays the pop sound effect
+	public synchronized void playDryFire() { //plays the dry fire sound effect
 		try {
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
 					this.getClass().getResource("/Audio/dry_fire.wav"));
@@ -233,7 +273,7 @@ public class Player {
 			nb.remove(nb.get(0)); //removes the bullets from the game when tried to exceed 3
 		}
 
-		if (nb.size() < 9) //only 9 bullet allowed at a time
+		if (nb.size() < 9) //only 9 bullets allowed at a time
 		{
 			nb.add(new Bullet(x, y, angle));//adds bullets to list when a new one is shot
 			if (game.getSoundState()) playGunshot();
@@ -286,10 +326,6 @@ public class Player {
 		return nb.size();
 	}
 
-	public void printAngle(){
-		System.out.println(angle);
-	}
-
 	public Point getPoint(){ //front of player
 		return new Point((int) pointX, (int) pointY);
 	}
@@ -297,4 +333,13 @@ public class Player {
 	public Point getPoint2(){ //back of player
 		return new Point((int) pointX2, (int) pointY2);
 	}
+
+	public Rectangle getHitbox(){
+		return hitbox;
+	}
+	
+	public void reset(){
+		nb.clear();
+	}
+
 }

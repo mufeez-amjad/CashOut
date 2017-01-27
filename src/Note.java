@@ -4,7 +4,6 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -23,7 +22,6 @@ public class Note {
 	private int width;
 	private int height;
 	private CashOut game;
-	private boolean spawnedCorrectly = false;
 
 	public Note(CashOut c, ArrayList<Rectangle> hits){
 		try { 
@@ -34,17 +32,18 @@ public class Note {
 		number = rand.nextInt(9);
 		x = rand.nextInt(1100);
 		y = rand.nextInt(800);
+		width = note.getWidth();
+		height = note.getHeight();
+		Rectangle hit = new Rectangle(x, y, width, height);
 		for (int i = 0; i < hits.size(); i++){
-			if (x > hits.get(i).getX() && x < hits.get(i).getX() + hits.get(i).getWidth() && y > hits.get(i).getY() && y < hits.get(i).getY() + hits.get(i).getHeight()){
+			while (hit.intersects(hits.get(i))){
 				x = rand.nextInt(1100);
 				y = rand.nextInt(800);
 				i = 0;
-				System.out.println("respawn");
+				hit = new Rectangle(x, y, width, height);
 			}
 		}
-				
-		width = note.getWidth();
-		height = note.getHeight();
+		
 		game = c;
 	}
 
@@ -67,9 +66,9 @@ public class Note {
 
 	public void collect(Player p, Level l){
 		if (!isCollected){
-			int pX = p.getPoint().x;
-			int pY = p.getPoint().y;
-			if (pX > x && pX < x + width && pY > y && pY < y + height){
+			p.getPoint();
+			p.getPoint();
+			if (p.getHitbox().contains(x + width/2, y + height/2)){
 				l.addNotesValues(number);
 				isCollected  = true;
 				l.addNotesCollected(1);
@@ -77,7 +76,7 @@ public class Note {
 			}
 		}
 	}
-
+	
 	public synchronized void playSound() { //plays the sound effect
 		new Thread(new Runnable() { //creates a new thread
 			public void run() {

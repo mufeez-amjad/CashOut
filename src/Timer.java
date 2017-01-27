@@ -29,6 +29,8 @@ public class Timer {
 
 	public void paint(Graphics2D g2d){
 		checkTime();
+		g2d.setColor(new Color(88, 89, 91, 200));
+		g2d.fillRoundRect(1015, 10, 165, 60, 20, 20);
 		AffineTransform old = g2d.getTransform(); //gets original painting properties
 		if (!timesUp && running) progress--;
 		Arc2D.Float arc = new Arc2D.Float(Arc2D.PIE);
@@ -46,9 +48,12 @@ public class Timer {
 	}
 
 	private void checkTime(){
-		if (-progress/speed >= 0){
-			timesUp = true;
-			running = false;
+		if (running){
+			if (-progress/speed >= 0){
+				timesUp = true;
+				running = false;
+			}
+			if (progress/speed < 120) color = Color.red;
 		}
 	}
 

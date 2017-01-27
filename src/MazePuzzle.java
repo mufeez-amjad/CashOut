@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -39,8 +40,8 @@ public class MazePuzzle {
 		Rectangle r9 = new Rectangle(39, 496, 628, 42);
 		Rectangle r10 = new Rectangle(667, 448, 164, 151);
 		seconds = secs;
-		timer = new Timer(1150, 100, 15, seconds/3, "WHITE", true);
 
+		timer = new Timer(1150, 100, 15, seconds/3, "RED", true);
 		hitboxes.add(r1);
 		hitboxes.add(r2);
 		hitboxes.add(r3);
@@ -54,16 +55,22 @@ public class MazePuzzle {
 	}
 
 	public void paint(Graphics2D g2d) {
+
+		Color yellowTrans = new Color(255, 255, 0, 127);
+		g2d.setColor(yellowTrans);
+		g2d.fillRect(0,0,1200, 900);
 		if (!ready) {
-			Color yellowTrans = new Color(255, 255, 0, 127);
-			g2d.setColor(yellowTrans);
-			g2d.fillRect(0,0,1200, 900);
 			g2d.setColor(Color.decode("0x065C27"));
 			g2d.fillRect(0, 37, 60, 41);
 			g2d.setColor(Color.WHITE);
 			g2d.setFont(CashOut.getFontSmall());
 			g2d.drawString("Start", 8, 60);
-			
+			FontMetrics fontMetrics = g2d.getFontMetrics(CashOut.getFontBig());
+			g2d.setColor(Color.black);
+			g2d.setFont(CashOut.getFontBig());
+			int stringLength = fontMetrics.stringWidth("MOVE YOUR MOUSE TO START");
+			int stringHeight = fontMetrics.getHeight(); 
+			g2d.drawString("MOVE YOUR MOUSE TO START", (CashOut.getFrameWidth()/2) - (stringLength/2), (CashOut.getFrameHeight()/2) - (stringHeight/2));
 
 		} else {
 			int alpha = 127; // 50% transparent
@@ -110,12 +117,9 @@ public class MazePuzzle {
 		if (!lose){
 			if (!inMaze && ready){
 				timer.stopStart();
-				System.out.println("OUT");
 			}
 			if (!timer.isRunning() && ready) {
 				lose = true;
-				System.out.println("TIME");
-				//timer.cancel();
 			}
 		}
 	}
@@ -143,24 +147,24 @@ public class MazePuzzle {
 		}
 
 	}
-	
+
 	public boolean isFinished(){
 		return lose || win;
 	}
-	
+
 	public boolean isWin(){
 		return win;
 	}
-	
+
 	public boolean isLose(){
 		return lose;
 	}
-	
+
 	public void reset(){
 		timer = new Timer(1150, 100, 15, seconds/3, "WHITE", true);
 		lose = false;
 		inMaze = false;
 		ready = false;
-		
+
 	}
 }
